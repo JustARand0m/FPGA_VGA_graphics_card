@@ -18,7 +18,7 @@ architecture BEHAV of TOP is
 			PIXEL_CLK: in std_logic;
 			RESET: in std_logic
 		);
-	end component;
+	end component SYNC_GEN;
 
 	component MEM_CTRL is
 		port(
@@ -30,7 +30,7 @@ architecture BEHAV of TOP is
 			W_CLK: in std_logic;
 			RESET: in std_logic
 		);
-	end component;
+	end component MEM_CTRL;
 
 	 
 	component IMG_CREATE is
@@ -41,7 +41,7 @@ architecture BEHAV of TOP is
 			SYS_CLK: in std_logic;
 			RESET: in std_logic
 		);
-	end component;
+	end component IMG_CREATE;
 	
 	component clk_wiz_0 is
 	  port(
@@ -51,7 +51,7 @@ architecture BEHAV of TOP is
 		locked : out STD_LOGIC;
 		clk_src : in STD_LOGIC
 	  );
-	end component;
+	end component clk_wiz_0;
 	-- -------------------------- signals --------------------------------------
 	signal BLANK: std_logic;
 	-- From MEM_CTRL to BLANK_CHECK
@@ -61,7 +61,8 @@ architecture BEHAV of TOP is
 	signal W_ADDR, R_ADDR: std_logic_vector(18 downto 0);
 	signal PIXEL_CLK, WRITE_CLK, SYS_CLK: std_logic;
 	-- -------------------------- port maps ------------------------------------
-	INST_SYNC_GEN: SYNC_GEN port map(
+begin
+    INST_SYNC_GEN: SYNC_GEN port map(
 		HS        => HS,
 		VS        => VS,
 		C_H       => R_ADDR(9 downto 0),
@@ -92,7 +93,7 @@ architecture BEHAV of TOP is
 		W_ADDR  => W_ADDR,
 		W_CLK   => SYS_CLK,
 		SYS_CLK => SYS_CLK,
-		RESET   => 0
+		RESET   => '0'
 	);
 		
 	INST_CLKWIZ: clk_wiz_0 port map(
