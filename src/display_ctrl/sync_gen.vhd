@@ -23,7 +23,7 @@ architecture BEHAV of SYNC_GEN is
 
 	constant INT_RANGE_TIMER_H: integer := 3000000;
 	constant INT_RANGE_TIMER_V: integer := 3000000;
-	constant CLK_FEQ: integer := 25000000;
+	constant CLK_FRQ: integer := 25000000;
 
 	-- waiting times in ns
 	constant WAIT_H_SYNC: integer := 3840;
@@ -42,16 +42,16 @@ architecture BEHAV of SYNC_GEN is
 	component COUNTER is
 		generic(LENGTH: integer);
 		port(
-			INC, RESET: in std_logic;
+			CLK, RESET, EN: in std_logic;
 			Q: out std_logic_vector(LENGTH-1 downto 0));
-	end component;
+	end component COUNTER;
 	
-	entity WAIT_TIMER is
+	component WAIT_TIMER is
 		generic(INT_RANGE: integer);
 		port(
 			CLK, RESET: in std_logic;
 			Q: out integer range 0 to INT_RANGE);
-	end WAIT_TIMER;
+	end component WAIT_TIMER;
 	
 	
 	---------types---------
@@ -67,7 +67,7 @@ architecture BEHAV of SYNC_GEN is
 	function convertTime(NANO_SEC: integer := 0) 
 		return integer is variable CLK_CYCLES : integer;
 	begin
-		CLK_CYCLES = NANO_SEC / (1000000000 / CLK_FRQ);
+		CLK_CYCLES := NANO_SEC / (1000000000 / CLK_FRQ);
 		return CLK_CYCLES + 1; 
 	end function;
 
@@ -76,7 +76,7 @@ architecture BEHAV of SYNC_GEN is
 
 	-- counter increment signals, on 1 the counter will increment with clk speed
 	signal INC_V: std_logic := '0';
-	singal INC_H: std_logic := '0';
+	signal INC_H: std_logic := '0';
 
 	-- reset signals for counters and timer, resets internal counters
 	signal RESET_V, RESET_H, RESET_TIMER_H, RESET_TIMER_V: std_logic;
@@ -102,17 +102,16 @@ begin
 		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER_H, Q => CURR_TIME_H);
 	TIMER_V: WAIT_TIMER
 		generic map(INT_RANGE => INT_RANGE_TIMER_V)
-		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER_V, Q => CURR_TIME_V)
+		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER_V, Q => CURR_TIME_V);
 
-	-- vertical process
-	process(CLK) 
+	VERTICAL: process (PIXEL_CLK) 
 	begin
 		if(RESET = '1') then
 			RESET_V <= '1';
 			RESET_TIMER_V <= '1';
 			CURR_STATE_V <= V_SYNC;
 
-		elsif(CLK = '1' and CLK'event) then
+		elsif(PIXEL_CLK = '1' and PIXEL_CLK'event) then
 			RESET_TIMER_V <= '0';
 			RESET_V <= '0';
 			VS <= '1';
@@ -134,27 +133,26 @@ begin
 					if(CURR_TIME_V = convertTime(WAIT_V_DISPL)) then
 						CURR_STATE_V <= V_B_PORCH;
 						RESET_TIMER_V <= '1';
-						BLANK = '1';
+						BLANK <= '1';
 					end if;
 				when V_B_PORCH => 
 					if(CURR_TIME_V = convertTime(WAIT_V_BPORCH)) then
-						CURR_STATE <= V_SYNC;
+						CURR_STATE_V <= V_SYNC;
 						RESET_TIMER_V <= '1';
 						BLANK <= '0';
 					end if;
 			end case;
 		end if;
-	end process
+	end process VERTICAL;
 	
-	-- horizontal process
-	process(CLK)
+	HORIZONTAL: process(PIXEL_CLK)
 	begin
 		if(RESET = '1') then
 			RESET_H <= '1';
 			RESET_TIMER_H <= '1';
 			CURR_STATE_H <= H_SYNC;
 
-		elsif (CLK = '1' and CLK'event) then
+		elsif (PIXEL_CLK = '1' and PIXEL_CLK'event) then
 			RESET_H <= '0';
 			RESET_TIMER_H <= '0';
 			if(CURR_STATE_V = V_DISPL) then
@@ -172,12 +170,12 @@ begin
 						if(CURR_TIME_H = convertTime(WAIT_H_FPORCH)) then
 							CURR_STATE_H <= H_DISPL;
 							RESET_TIMER_H <= '1';	
-							INC_H = '1'
+							INC_H <= '1';
 							BLANK <= '0';
 						end if;
 					when H_DISPL => 
 						if(CURR_TIME_H = convertTime(WAIT_H_DISPL)) then
-							INC_H = '0';
+							INC_H <= '0';
 							CURR_STATE_H <= H_B_PORCH;
 							RESET_TIMER_H <= '1';
 							BLANK <= '1';
@@ -193,5 +191,5 @@ begin
 				end case;
 			end if;
 		end if;
-	end process
+	end process HORIZONTAL;
 end BEHAV;
