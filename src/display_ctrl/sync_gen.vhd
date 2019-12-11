@@ -21,7 +21,8 @@ architecture BEHAV of SYNC_GEN is
 
 	---------constants---------
 
-	constant INT_RANGE_TIMER: integer := 3000000;
+	constant INT_RANGE_TIMER_H: integer := 3000000;
+	constant INT_RANGE_TIMER_V: integer := 3000000;
 	constant CLK_FEQ: integer := 25000000;
 
 	-- waiting times in ns
@@ -55,7 +56,7 @@ architecture BEHAV of SYNC_GEN is
 	
 	---------types---------
 	
-	type H_STATE is (H_WAIT_FOR_V, H_SYNC, H_F_PORCH, H_DISPL, H_B_PORCH);
+	type H_STATE is (H_SYNC, H_F_PORCH, H_DISPL, H_B_PORCH);
 	type V_STATE is (V_SYNC, V_F_PORCH, V_DISPL, V_B_PORCH);
 
 	---------functions---------
@@ -73,56 +74,124 @@ architecture BEHAV of SYNC_GEN is
 
 	---------singals---------
 
-	-- counter increment signals, on a rising edge on 1 the counter will increment
-	signal INC_V, INC_H
+	-- counter increment signals, on 1 the counter will increment with clk speed
+	signal INC_V: std_logic := '0';
+	singal INC_H: std_logic := '0';
 
 	-- reset signals for counters and timer, resets internal counters
-	signal RESET_V, RESET_H, RESET_TIMER: std_logic;
+	signal RESET_V, RESET_H, RESET_TIMER_H, RESET_TIMER_V: std_logic;
 
 	-- internal count of timer and counter components
 	signal COUNT_H: std_logic_vector(C_H_LENGTH - 1 downto 0);
 	signal COUNT_V: std_logic_vector(C_V_LENGTH - 1 downto 0);
-	signal CURR_TIME: integer range 0 to INT_RANGE;
+	signal CURR_TIME_H: integer range 0 to INT_RANGE_TIMER_H;
+	signal CURR_TIME_V: integer range 0 to INT_RANGE_TIMER_V;
 
-	signal CURR_STATE: STATE := H_SYNC;
+	signal CURR_STATE_H: H_STATE := H_SYNC;
+	signal CURR_STATE_V: V_STATE := V_SYNC;
 
 begin
 	COUNTER_V: COUNTER
 		generic map(LENGTH => C_V_LENGTH)
-		port map(INC => INC_V, RESET => RESET_V, Q => COUNT_V);
+		port map(CLK => PIXEL_CLK, EN => INC_V, RESET => RESET_V, Q => COUNT_V);
 	COUNTER_H: COUNTER
 		generic map(LENGTH => C_H_LENGTH)
-		port map(INC => INC_H, RESET => RESET_H, Q => COUNT_H);
-	TIMER: H_WAIT_TIMER
-		generic map(INT_RANGE => INT_RANGE_TIMER)
-		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER, Q => CURR_TIME);
-	
-	process(CLK, RESET) 
-	begin
+		port map(CLK => PIXEL_CLK, EN => INC_H, RESET => RESET_H, Q => COUNT_H);
+	TIMER_H: WAIT_TIMER
+		generic map(INT_RANGE => INT_RANGE_TIMER_H)
+		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER_H, Q => CURR_TIME_H);
+	TIMER_V: WAIT_TIMER
+		generic map(INT_RANGE => INT_RANGE_TIMER_V)
+		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER_V, Q => CURR_TIME_V)
 
-	end process
-	
-	process(CLK, RESET)
+	-- vertical process
+	process(CLK) 
 	begin
-		RESET_V <= '0';
-		RESET_H <= '0';
-		RESET_TIMER <= '0';
-
 		if(RESET = '1') then
 			RESET_V <= '1';
-			RESET_H <= '1';
-			RESET_TIMER <= '1';
-			CURR_STATE <= H_SYNC;
-		elsif (CLK = '1' and CLK'event) then
-			case CURR_STATE is 
-				when H_SYNC => 
-					HS <= 0;
-					if(CURR_TIME = convertTime(WAIT_H_SYNC)) then 
-						CURR_STATE <= H_F_PORCH;
-						RESET_TIMER <= '1';
+			RESET_TIMER_V <= '1';
+			CURR_STATE_V <= V_SYNC;
+
+		elsif(CLK = '1' and CLK'event) then
+			RESET_TIMER_V <= '0';
+			RESET_V <= '0';
+			VS <= '1';
+			case CURR_STATE_V is
+				when V_SYNC => 
+					VS <= '0';
+					if(CURR_TIME_V = convertTime(WAIT_V_SYNC)) then
+						CURR_STATE_V <= V_F_PORCH;
+						RESET_TIMER_V <= '1';
+						BLANK <= '1';
 					end if;
-				when H	
+				when V_F_PORCH =>
+					if(CURR_TIME_V = convertTime(WAIT_V_FPORCH)) then 
+						CURR_STATE_V <= V_DISPL;
+						RESET_TIMER_V <= '1';
+						BLANK <= '0';
+					end if;
+				when V_DISPL => 
+					if(CURR_TIME_V = convertTime(WAIT_V_DISPL)) then
+						CURR_STATE_V <= V_B_PORCH;
+						RESET_TIMER_V <= '1';
+						BLANK = '1';
+					end if;
+				when V_B_PORCH => 
+					if(CURR_TIME_V = convertTime(WAIT_V_BPORCH)) then
+						CURR_STATE <= V_SYNC;
+						RESET_TIMER_V <= '1';
+						BLANK <= '0';
+					end if;
+			end case;
 		end if;
-		
+	end process
+	
+	-- horizontal process
+	process(CLK)
+	begin
+		if(RESET = '1') then
+			RESET_H <= '1';
+			RESET_TIMER_H <= '1';
+			CURR_STATE_H <= H_SYNC;
+
+		elsif (CLK = '1' and CLK'event) then
+			RESET_H <= '0';
+			RESET_TIMER_H <= '0';
+			if(CURR_STATE_V = V_DISPL) then
+				HS <= '1';
+				case CURR_STATE_H is 
+					when H_SYNC => 
+						INC_V <= '0';
+						HS <= '0';
+						if(CURR_TIME_H = convertTime(WAIT_H_SYNC)) then 
+							CURR_STATE_H <= H_F_PORCH;
+							RESET_TIMER_H <= '1';
+							BLANK <= '1';
+						end if;
+					when H_F_PORCH => 
+						if(CURR_TIME_H = convertTime(WAIT_H_FPORCH)) then
+							CURR_STATE_H <= H_DISPL;
+							RESET_TIMER_H <= '1';	
+							INC_H = '1'
+							BLANK <= '0';
+						end if;
+					when H_DISPL => 
+						if(CURR_TIME_H = convertTime(WAIT_H_DISPL)) then
+							INC_H = '0';
+							CURR_STATE_H <= H_B_PORCH;
+							RESET_TIMER_H <= '1';
+							BLANK <= '1';
+							RESET_H <= '1';
+						end if;
+					when H_B_PORCH => 
+						if(CURR_TIME_H = convertTime(WAIT_V_BPORCH)) then
+							CURR_STATE_H <= H_SYNC;
+							RESET_TIMER_H <= '1';
+							BLANK <= '0';
+							INC_V <= '1';
+						end if;
+				end case;
+			end if;
+		end if;
 	end process
 end BEHAV;
