@@ -79,7 +79,7 @@ architecture BEHAV of SYNC_GEN is
 	signal INC_H: std_logic := '0';
 
 	-- reset signals for counters and timer, resets internal counters
-	signal RESET_V, RESET_H, RESET_TIMER_H, RESET_TIMER_V: std_logic;
+	signal RESET_V, RESET_H, RESET_TIMER_H, RESET_TIMER_V, RESET_COMP_H: std_logic;
 
 	-- internal count of timer and counter components
 	signal COUNT_H: std_logic_vector(C_H_LENGTH - 1 downto 0);
@@ -89,6 +89,9 @@ architecture BEHAV of SYNC_GEN is
 
 	signal CURR_STATE_H: H_STATE := H_SYNC;
 	signal CURR_STATE_V: V_STATE := V_SYNC;
+	-- todo optimizable?
+	signal CURR_BLANK_H: std_logic := '0';
+	signal CURR_BLANK_V: std_logic := '0';
 
 begin
 	COUNTER_V: COUNTER
@@ -104,7 +107,7 @@ begin
 		generic map(INT_RANGE => INT_RANGE_TIMER_V)
 		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER_V, Q => CURR_TIME_V);
 
-	VERTICAL: process (PIXEL_CLK) 
+	VERTICAL: process (PIXEL_CLK, RESET) 
 	begin
 		if(RESET = '1') then
 			RESET_V <= '1';
@@ -115,39 +118,42 @@ begin
 			RESET_TIMER_V <= '0';
 			RESET_V <= '0';
 			VS <= '1';
+			RESET_COMP_H <= '0';
 			case CURR_STATE_V is
 				when V_SYNC => 
 					VS <= '0';
 					if(CURR_TIME_V = convertTime(WAIT_V_SYNC)) then
 						CURR_STATE_V <= V_F_PORCH;
 						RESET_TIMER_V <= '1';
-						BLANK <= '1';
+						CURR_BLANK_V <= '1';
 					end if;
 				when V_F_PORCH =>
 					if(CURR_TIME_V = convertTime(WAIT_V_FPORCH)) then 
 						CURR_STATE_V <= V_DISPL;
 						RESET_TIMER_V <= '1';
-						BLANK <= '0';
+						RESET_COMP_H <= '1';
+						CURR_BLANK_V <= '0';
 					end if;
 				when V_DISPL => 
 					if(CURR_TIME_V = convertTime(WAIT_V_DISPL)) then
 						CURR_STATE_V <= V_B_PORCH;
 						RESET_TIMER_V <= '1';
-						BLANK <= '1';
+						CURR_BLANK_V <= '1';
 					end if;
 				when V_B_PORCH => 
 					if(CURR_TIME_V = convertTime(WAIT_V_BPORCH)) then
 						CURR_STATE_V <= V_SYNC;
 						RESET_TIMER_V <= '1';
-						BLANK <= '0';
+						CURR_BLANK_V <= '0';
 					end if;
+				when others => CURR_STATE_V <= V_SYNC;
 			end case;
 		end if;
 	end process VERTICAL;
 	
-	HORIZONTAL: process(PIXEL_CLK)
+	HORIZONTAL: process(PIXEL_CLK, RESET_COMP_H, RESET)
 	begin
-		if(RESET = '1') then
+		if(RESET = '1' or RESET_COMP_H = '1') then
 			RESET_H <= '1';
 			RESET_TIMER_H <= '1';
 			CURR_STATE_H <= H_SYNC;
@@ -155,8 +161,8 @@ begin
 		elsif (PIXEL_CLK = '1' and PIXEL_CLK'event) then
 			RESET_H <= '0';
 			RESET_TIMER_H <= '0';
+			HS <= '1';
 			if(CURR_STATE_V = V_DISPL) then
-				HS <= '1';
 				case CURR_STATE_H is 
 					when H_SYNC => 
 						INC_V <= '0';
@@ -164,32 +170,36 @@ begin
 						if(CURR_TIME_H = convertTime(WAIT_H_SYNC)) then 
 							CURR_STATE_H <= H_F_PORCH;
 							RESET_TIMER_H <= '1';
-							BLANK <= '1';
+							CURR_BLANK_H <= '1';
 						end if;
 					when H_F_PORCH => 
 						if(CURR_TIME_H = convertTime(WAIT_H_FPORCH)) then
 							CURR_STATE_H <= H_DISPL;
 							RESET_TIMER_H <= '1';	
 							INC_H <= '1';
-							BLANK <= '0';
+							CURR_BLANK_H <= '0';
 						end if;
 					when H_DISPL => 
 						if(CURR_TIME_H = convertTime(WAIT_H_DISPL)) then
 							INC_H <= '0';
 							CURR_STATE_H <= H_B_PORCH;
 							RESET_TIMER_H <= '1';
-							BLANK <= '1';
+							CURR_BLANK_H <= '1';
 							RESET_H <= '1';
 						end if;
 					when H_B_PORCH => 
-						if(CURR_TIME_H = convertTime(WAIT_V_BPORCH)) then
+						if(CURR_TIME_H = convertTime(WAIT_H_BPORCH)) then
 							CURR_STATE_H <= H_SYNC;
 							RESET_TIMER_H <= '1';
-							BLANK <= '0';
+							CURR_BLANK_H <= '0';
 							INC_V <= '1';
 						end if;
+					when others => CURR_STATE_H <= H_SYNC;
 				end case;
 			end if;
 		end if;
 	end process HORIZONTAL;
+	C_H <= COUNT_H;
+	C_V <= COUNT_V;
+	BLANK <= CURR_BLANK_H or CURR_BLANK_V;
 end BEHAV;
