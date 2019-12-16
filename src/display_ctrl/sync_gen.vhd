@@ -63,12 +63,11 @@ architecture BEHAV of SYNC_GEN is
 
 	-- Function that converts time into clock cycles, depending on the CLK FRQ
 	-- Also it accounts for the rounding error of division:
-	-- +1 for if error like 100 / 40 => 2.5 => 2
 	function convertTime(NANO_SEC: integer := 0) 
 		return integer is variable CLK_CYCLES : integer;
 	begin
 		CLK_CYCLES := NANO_SEC / (1000000000 / CLK_FRQ);
-		return CLK_CYCLES + 1; 
+		return CLK_CYCLES - 1; 
 	end function;
 
 
@@ -138,6 +137,7 @@ begin
 					if(CURR_TIME_V = convertTime(WAIT_V_DISPL)) then
 						CURR_STATE_V <= V_B_PORCH;
 						RESET_TIMER_V <= '1';
+						RESET_V <= '1';
 						CURR_BLANK_V <= '1';
 					end if;
 				when V_B_PORCH => 
@@ -157,8 +157,9 @@ begin
 			RESET_H <= '1';
 			RESET_TIMER_H <= '1';
 			CURR_STATE_H <= H_SYNC;
+		end if;
 
-		elsif (PIXEL_CLK = '1' and PIXEL_CLK'event) then
+		if (PIXEL_CLK = '1' and PIXEL_CLK'event) then
 			RESET_H <= '0';
 			RESET_TIMER_H <= '0';
 			HS <= '1';

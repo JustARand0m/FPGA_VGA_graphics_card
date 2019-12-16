@@ -16,7 +16,8 @@ begin
 		begin
 			if RESET='1' then
 				CNT<= 0;      
-			elsif (CLK='1' and CLK'event) then
+			end if;
+			if (CLK='1' and CLK'event) then
 				CNT<= CNT+1;
 			end if;
 	end process;
