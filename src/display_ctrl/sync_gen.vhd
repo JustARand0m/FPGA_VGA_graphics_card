@@ -25,16 +25,16 @@ architecture BEHAV of SYNC_GEN is
 	constant INT_RANGE_TIMER_V: integer := 3000000;
 	constant CLK_FRQ: integer := 25000000;
 
-	-- waiting times in ns
-	constant WAIT_H_SYNC: integer := 3840;
-	constant WAIT_H_FPORCH: integer := 640;
-	constant WAIT_H_DISPL: integer := 25600;
-	constant WAIT_H_BPORCH: integer := 1920;
+	-- waiting times in ns on the right side (comment) the count;
+	constant WAIT_H_SYNC: integer := 3840; --96
+	constant WAIT_H_FPORCH: integer := 640; --16
+	constant WAIT_H_DISPL: integer := 25600; --640
+	constant WAIT_H_BPORCH: integer := 1920; --48
 	
-	constant WAIT_V_SYNC: integer := 64000;
-	constant WAIT_V_FPORCH: integer := 928000;
-	constant WAIT_V_DISPL: integer := 15360000;
-	constant WAIT_V_BPORCH: integer := 320000;
+	constant WAIT_V_SYNC: integer := 64000; --1600
+	constant WAIT_V_FPORCH: integer := 928000; --23200
+	constant WAIT_V_DISPL: integer := 15360000; --384000
+	constant WAIT_V_BPORCH: integer := 320000; --8000
 
 
 	---------components---------
