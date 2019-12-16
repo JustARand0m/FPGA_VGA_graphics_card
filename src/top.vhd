@@ -12,8 +12,8 @@ architecture BEHAV of TOP is
 	component SYNC_GEN is
 		port(
 			HS, VS: out std_logic;
-			C_H: out std_logic_vector (9 downto 0);
-			C_V: out std_logic_vector (8 downto 0);
+			C_H: out std_logic_vector(9 downto 0);
+			C_V: out std_logic_vector(8 downto 0);
 			BLANK: out std_logic;
 			PIXEL_CLK: in std_logic;
 			RESET: in std_logic
@@ -23,10 +23,10 @@ architecture BEHAV of TOP is
 	component MEM_CTRL is
 		port(
 			R_R, R_G, R_B : out std_logic_vector(3 downto 0);
-			R_ADDR: in std_logic_vector (18 downto 0);
+			R_ADDR: in std_logic_vector(18 downto 0);
 			R_CLK: in std_logic;
 			W_R, W_G, W_B : in std_logic_vector(3 downto 0);
-			W_ADDR: in std_logic_vector (18 downto 0);
+			W_ADDR: in std_logic_vector(18 downto 0);
 			W_CLK: in std_logic;
 			RESET: in std_logic
 		);
@@ -102,7 +102,6 @@ architecture BEHAV of TOP is
 		LOCKED => open,
 		CLK_SRC => CLK_IN
 	);
-		
 			
 end BEHAV;
 
