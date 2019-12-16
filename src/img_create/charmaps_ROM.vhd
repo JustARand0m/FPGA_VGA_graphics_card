@@ -39,7 +39,6 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
 
-use work.yavga_pkg.all;
 
 --  Uncomment the following lines to use the declarations that are
 --  provided for instantiating Xilinx primitive components.
@@ -50,18 +49,18 @@ entity charmaps_ROM is
   port (
     i_EN    : in  std_logic;            -- RAM Enable Input
     i_clock : in  std_logic;            -- Clock
-    i_ADDR  : in  std_logic_vector(c_INTCHMAP_ADDR_BUS_W - 1 downto 0);  -- 11-bit Address Input
-    o_DO    : out std_logic_vector(c_INTCHMAP_DATA_BUS_W - 1 downto 0)  -- 8-bit Data Output
+    i_ADDR  : in  std_logic_vector(10 downto 0);  -- 11-bit Address Input
+    o_DO    : out std_logic_vector(7 downto 0)  -- 8-bit Data Output
     );
 end charmaps_ROM;
 
 architecture Behavioral of charmaps_ROM is
   signal s_EN : std_logic;
 
-  constant c_rom_size : natural := 2**c_INTCHMAP_ADDR_BUS_W;
+  constant c_rom_size : natural := 2**11;
 
   type t_rom is array (c_rom_size-1 downto 0) of
-    std_logic_vector (c_INTCHMAP_DATA_BUS_W - 1 downto 0);
+    std_logic_vector (7 downto 0);
 
   constant c_rom : t_rom := (
     -- AUTOMATICALLY GENERATED... START
