@@ -197,6 +197,8 @@ begin
 						end if;
 					when others => CURR_STATE_H <= H_SYNC;
 				end case;
+			else 
+				INC_V <= '0';
 			end if;
 		end if;
 	end process HORIZONTAL;
