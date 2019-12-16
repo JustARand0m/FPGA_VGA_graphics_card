@@ -1,10 +1,14 @@
+-- CREATOR: Michael Braun
+
 library ieee;
 use ieee.std_logic_1164.all;
 
 entity TOP is
-	port(CLK_IN: in std_logic;
-	     PMOD_R, PMOD_G, PMOD_B: out std_logic_vector(3 downto 0);
-	     HS, VS: out std_logic);
+	port(
+		CLK_IN: in std_logic;
+	    PMOD_R, PMOD_G, PMOD_B: out std_logic_vector(3 downto 0);
+	    HS, VS: out std_logic
+	);
 end TOP;
 
 architecture BEHAV of TOP is
