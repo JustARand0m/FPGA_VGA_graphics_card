@@ -19,15 +19,15 @@ architecture TESTBENCH of MEM_CTRL_TB is
         );
     end component MEM_CTRL;
 
-    signal TB_R_R:      std_logic_vector(3 downto 0)    := '000'; 
-    signal TB_R_G:      std_logic_vector(3 downto 0)    := '000'; 
-    signal TB_R_B:      std_logic_vector(3 downto 0)    := '000'; 
+    signal TB_R_R:      std_logic_vector(3 downto 0)    := "0000"; 
+    signal TB_R_G:      std_logic_vector(3 downto 0)    := "0000"; 
+    signal TB_R_B:      std_logic_vector(3 downto 0)    := "0000"; 
     signal TB_R_ADDR:   std_logic_vector(18 downto 0)   := (others => '0');
     signal TB_R_CLK:    std_logic := '0';
 	
-    signal TB_W_R:      std_logic_vector(3 downto 0)    := '000'; 
-    signal TB_W_G:      std_logic_vector(3 downto 0)    := '111'; 
-    signal TB_W_B:      std_logic_vector(3 downto 0)    := '000';
+    signal TB_W_R:      std_logic_vector(3 downto 0)    := "0000"; 
+    signal TB_W_G:      std_logic_vector(3 downto 0)    := "1111"; 
+    signal TB_W_B:      std_logic_vector(3 downto 0)    := "0000";
     signal TB_W_ADDR:   std_logic_vector(18 downto 0)   := (others => '0');
     signal TB_W_CLK:    std_logic := '0';
 
@@ -48,7 +48,7 @@ begin
 		RESET  => TB_RESET
 	);
 
-	TB_R_CLK <= not TB_R_CLK after 20 ns;
-	TB_W_CLK <= not TB_W_CLK after 20 ns;
+	TB_R_CLK <= not TB_R_CLK after 5 ns;
+	TB_W_CLK <= not TB_W_CLK after 5 ns;
 
 end TESTBENCH;
