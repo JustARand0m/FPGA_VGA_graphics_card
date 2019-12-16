@@ -61,6 +61,7 @@ architecture BEHAV of TOP is
 	signal W_ADDR, R_ADDR: std_logic_vector(18 downto 0);
 	signal PIXEL_CLK, WRITE_CLK, SYS_CLK: std_logic;
 	-- -------------------------- port maps ------------------------------------
+begin
 	INST_SYNC_GEN: SYNC_GEN port map(
 		HS        => HS,
 		VS        => VS,
