@@ -16,10 +16,19 @@ architecture BEHAV of TOP is
 	component SYNC_GEN is
 		port(
 			HS, VS: out std_logic;
+			C_H: out std_logic_vector (9 downto 0);
 			C_V: out std_logic_vector (8 downto 0);
 			BLANK: out std_logic;
 			PIXEL_CLK: in std_logic;
 			RESET: in std_logic
+		);
+	end component;
+	
+	component BLANK_CHECK is
+		port(
+			R_R, R_G, R_B: out std_logic_vector(3 downto 0);
+			W_R, W_G, W_B: in std_logic_vector(3 downto 0);
+			BLANK: in std_logic
 		);
 	end component;
 
@@ -34,8 +43,7 @@ architecture BEHAV of TOP is
 			RESET: in std_logic
 		);
 	end component;
-
-	 
+	
 	component IMG_CREATE is
 		port(
 			W_R, W_G, W_B: out std_logic_vector(3 downto 0);
@@ -74,6 +82,16 @@ begin
 		PIXEL_CLK => PIXEL_CLK,
 		RESET     => '0'
 	);
+	
+	INST_BLANK_CHECK: BLANK_CHECK port map(
+		R_R    => PMOD_R,
+		R_G    => PMOD_G,
+		R_B    => PMOD_B,
+		W_R    => MEM_BLANK_R,
+		W_G    => MEM_BLANK_G,
+		W_B    => MEM_BLANK_B,
+		BLANK  => BLANK
+	);
 
 	INST_MEM_CTRL: MEM_CTRL port map(
 		R_R    => MEM_BLANK_R,
@@ -105,7 +123,6 @@ begin
 		reset => '0',
 		LOCKED => open,
 		CLK_SRC => CLK_IN
-	);
-			
+	);	
 end BEHAV;
 
