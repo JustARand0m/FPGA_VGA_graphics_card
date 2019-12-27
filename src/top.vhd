@@ -34,9 +34,11 @@ architecture BEHAV of TOP is
 
 	component MEM_CTRL is
 		port(
+            BLANK: in std_logic;
 			R_R, R_G, R_B : out std_logic_vector(3 downto 0);
 			R_ADDR: in std_logic_vector(18 downto 0);
 			R_CLK: in std_logic;
+            SYNC: in std_logic;
 			W_R, W_G, W_B : in std_logic_vector(3 downto 0);
 			W_ADDR: in std_logic_vector(18 downto 0);
 			W_CLK: in std_logic;
@@ -87,11 +89,13 @@ begin
 	);
 
 	INST_MEM_CTRL: MEM_CTRL port map(
+        BLANK  => BLANK,
 		R_R    => MEM_BLANK_R,
 		R_G    => MEM_BLANK_G,
 		R_B    => MEM_BLANK_B,
 		R_ADDR => R_ADDR,
 		R_CLK  => PIXEL_CLK,
+        SYNC   => '0',
 		W_R    => IMG_MEM_R,
 		W_G    => IMG_MEM_G,
 		W_B    => IMG_MEM_B,
