@@ -24,7 +24,7 @@ architecture BEHAV of MEM_CTRL is
     type BUFFER_TYPE is (R1, R2, R3); 
 	--type ram_line_type	is array (0 to 639) of std_logic_vector(11 downto 0);
 	--type ram_type		is array (0 to 479) of ram_line_type;
-	type RAM_LINE_TYPE	is array (0 to 0) of std_logic_vector(11 downto 0);
+	type RAM_LINE_TYPE	is array (0 to 3) of std_logic_vector(11 downto 0);
 	type RAM_TYPE		is array (0 to 0) of RAM_LINE_TYPE;
 	-- signals
     signal FRONT_BUFFER:    BUFFER_TYPE := R1;
@@ -61,27 +61,41 @@ begin
 		end if;
 	end process READ;
 	
-	WRITE: process(BLANK, RESET)
+	WRITE: process(RESET, W_CLK, BLANK, SYNC)
 	begin
-		if(RESET = '1') then
+        if(RESET = '1') then
             RAM1 <= (others => (others => (others => '0')));
             RAM2 <= (others => (others => (others => '0')));
             RAM3 <= (others => (others => (others => '0')));
 
-		elsif(rising_edge(BLANK)) then
-            cnt <= cnt + 1;
-            if(cnt = 480 * 300) then
+            FRONT_BUFFER    <= R1;
+            BACK_BUFFER_RDY <= R2;
+            BACK_BUFFER_BSY <= R3;
+        else
+            if(rising_edge(W_CLK)) then
                 case FRONT_BUFFER is
-                    when R1 => FRONT_BUFFER <= R2;
-                    when R2 => FRONT_BUFFER <= R3;
-                    when R3 => FRONT_BUFFER <= R1;
+                    when R1 =>
+                        RAM1(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(3 downto 0)  <= W_R;
+                        RAM1(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(7 downto 4)  <= W_G;
+                        RAM1(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(11 downto 8) <= W_B;	
+                    when R2 =>
+                        RAM2(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(3 downto 0)  <= W_R;
+                        RAM2(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(7 downto 4)  <= W_G;
+                        RAM2(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(11 downto 8) <= W_B;	
+                    when R3 =>
+                        RAM3(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(3 downto 0)  <= W_R;
+                        RAM3(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(7 downto 4)  <= W_G;
+                        RAM3(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(11 downto 8) <= W_B;	
                 end case;
-                cnt <= (others => '0');
             end if;
-            
-		--	RAM(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(3 downto 0)  <= W_R;
-		--	RAM(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(7 downto 4)  <= W_G;
-		--	RAM(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(11 downto 8) <= W_B;	
-		end if;
-	end process WRITE;
+            if(rising_edge(BLANK)) then
+                FRONT_BUFFER    <= BACK_BUFFER_RDY;
+                BACK_BUFFER_RDY <= FRONT_BUFFER;
+            end if;
+            if(rising_edge(SYNC)) then
+                BACK_BUFFER_RDY  <= BACK_BUFFER_BSY;
+                BACK_BUFFER_BSY  <= BACK_BUFFER_RDY;
+            end if;
+        end if;
+    end process WRITE;
 end BEHAV;

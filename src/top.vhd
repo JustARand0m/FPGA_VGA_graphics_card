@@ -45,6 +45,19 @@ architecture BEHAV of TOP is
 			RESET: in std_logic
 		);
 	end component;
+
+	component IMG_CREATE is
+		port(
+            W_R: out std_logic_vector(3 downto 0);
+            W_G: out std_logic_vector(3 downto 0);
+            W_B: out std_logic_vector(3 downto 0);
+            W_ADDR: out std_logic_vector(18 downto 0);
+            W_CLK: in std_logic;
+            SYS_CLK: in std_logic;
+            RESET: in std_logic;
+            SYNC: out std_logic
+		);
+	end component;
 	
 component clk_wiz_0
 port
@@ -52,6 +65,7 @@ port
   -- Clock out ports
   clk_out1          : out    std_logic;
   clk_out2          : out    std_logic;
+  clk_out3          : out    std_logic;
   -- Status and control signals
   reset             : in     std_logic;
   locked            : out    std_logic;
@@ -59,7 +73,7 @@ port
  );
  end component;
 	-- -------------------------- signals --------------------------------------
-	signal BLANK: std_logic;
+	signal BLANK, SYNC: std_logic;
 	-- From MEM_CTRL to BLANK_CHECK
 	signal MEM_BLANK_R, MEM_BLANK_G, MEM_BLANK_B: std_logic_vector(3 downto 0);
 	-- From IMG_CREATE to MEM_CTRL
@@ -95,18 +109,30 @@ begin
 		R_B    => MEM_BLANK_B,
 		R_ADDR => R_ADDR,
 		R_CLK  => PIXEL_CLK,
-        SYNC   => '0',
+        SYNC   => SYNC,
 		W_R    => IMG_MEM_R,
 		W_G    => IMG_MEM_G,
 		W_B    => IMG_MEM_B,
 		W_ADDR => W_ADDR,
-		W_CLK  => SYS_CLK,
+		W_CLK  => WRITE_CLK,
 		RESET  => '0'
 	);
 
+	INST_IMG_CREATE: IMG_CREATE port map(
+		W_R    => IMG_MEM_R,
+		W_G    => IMG_MEM_G,
+		W_B    => IMG_MEM_B,
+		W_ADDR => W_ADDR,
+		W_CLK  => WRITE_CLK,
+        SYS_CLK => SYS_CLK,
+        RESET   => '0',
+        SYNC    => SYNC
+    );
+
 	INST_CLKWIZ: clk_wiz_0 port map(
-		CLK_OUT1 => SYS_CLK,
-		CLK_OUT2 => PIXEL_CLK,
+		CLK_OUT1 => PIXEL_CLK,
+		CLK_OUT2 => WRITE_CLK,
+		CLK_OUT3 => SYS_CLK,
 		reset => '0',
 		CLK_IN1 => CLK_IN
 	);	
