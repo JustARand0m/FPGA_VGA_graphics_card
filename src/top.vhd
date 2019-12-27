@@ -7,7 +7,7 @@ entity TOP is
 	port(
 		CLK_IN: in std_logic;
 	    PMOD_R, PMOD_G, PMOD_B: out std_logic_vector(3 downto 0);
-	    HS, VS: out std_logic
+	    PMOD_HS, PMOD_VS: out std_logic
 	);
 end TOP;
 
@@ -44,25 +44,18 @@ architecture BEHAV of TOP is
 		);
 	end component;
 	
-	component IMG_CREATE is
-		port(
-			W_R, W_G, W_B: out std_logic_vector(3 downto 0);
-			W_ADDR: out std_logic_vector(18 downto 0);
-			W_CLK: in std_logic;
-			SYS_CLK: in std_logic;
-			RESET: in std_logic
-		);
-	end component;
-	
-	component clk_wiz_0 is
-	  port(
-		clk : out STD_LOGIC;
-		clk2 : out STD_LOGIC;
-		reset : in STD_LOGIC;
-		locked : out STD_LOGIC;
-		clk_src : in STD_LOGIC
-	  );
-	end component;
+component clk_wiz_0
+port
+ (-- Clock in ports
+  -- Clock out ports
+  clk_out1          : out    std_logic;
+  clk_out2          : out    std_logic;
+  -- Status and control signals
+  reset             : in     std_logic;
+  locked            : out    std_logic;
+  clk_in1           : in     std_logic
+ );
+ end component;
 	-- -------------------------- signals --------------------------------------
 	signal BLANK: std_logic;
 	-- From MEM_CTRL to BLANK_CHECK
@@ -74,8 +67,8 @@ architecture BEHAV of TOP is
 	-- -------------------------- port maps ------------------------------------
 begin
 	INST_SYNC_GEN: SYNC_GEN port map(
-		HS        => HS,
-		VS        => VS,
+		HS        => PMOD_HS,
+		VS        => PMOD_VS,
 		C_H       => R_ADDR(9 downto 0),
 		C_V       => R_ADDR(18 downto 10),
 		BLANK     => BLANK,
@@ -107,22 +100,11 @@ begin
 		RESET  => '0'
 	);
 
-	INST_IMG_CREATE: IMG_CREATE port map(
-		W_R     => IMG_MEM_R,
-		W_G     => IMG_MEM_G,
-		W_B     => IMG_MEM_B,
-		W_ADDR  => W_ADDR,
-		W_CLK   => SYS_CLK,
-		SYS_CLK => SYS_CLK,
-		RESET   => '0'
-	);
-		
 	INST_CLKWIZ: clk_wiz_0 port map(
-		CLK => SYS_CLK,
-		CLK2 => PIXEL_CLK,
+		CLK_OUT1 => SYS_CLK,
+		CLK_OUT2 => PIXEL_CLK,
 		reset => '0',
-		LOCKED => open,
-		CLK_SRC => CLK_IN
+		CLK_IN1 => CLK_IN
 	);	
 end BEHAV;
 
