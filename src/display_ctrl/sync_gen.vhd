@@ -145,7 +145,7 @@ begin
 					if(CURR_TIME_V = convertTime(WAIT_V_BPORCH)) then
 						CURR_STATE_V <= V_SYNC;
 						RESET_TIMER_V <= '1';
-						CURR_BLANK_V <= '0';
+						CURR_BLANK_V <= '1';
 					end if;
 				when others => CURR_STATE_V <= V_SYNC;
 			end case;
@@ -192,7 +192,7 @@ begin
 						if(CURR_TIME_H = convertTime(WAIT_H_BPORCH)) then
 							CURR_STATE_H <= H_SYNC;
 							RESET_TIMER_H <= '1';
-							CURR_BLANK_H <= '0';
+							CURR_BLANK_H <= '1';
 							INC_V <= '1';
 						end if;
 					when others => CURR_STATE_H <= H_SYNC;
