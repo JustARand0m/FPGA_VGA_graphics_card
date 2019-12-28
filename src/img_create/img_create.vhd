@@ -219,7 +219,14 @@ Addr_finding: process (W_CLK)
 			Count_Char_write <= Count_Char_write +'1';
 			if Count_Convert < 7 then Count_Convert <= Count_Convert + 1; end if;
 			Count_Convert2 <= Count_Convert2 + '1';
-
+				
+			if Count_Char_write = "111"
+				if Count_Zeile_write = "1111"
+					--vsync <= '1';
+				else vsync <= '0';
+				end if;
+			end if:
+			
 			if Count_Char_write = "111" then
 				Count_Char_write <= "000";
 			end if;
