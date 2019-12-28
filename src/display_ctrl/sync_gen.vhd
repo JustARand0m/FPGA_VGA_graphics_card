@@ -68,7 +68,7 @@ architecture BEHAV of SYNC_GEN is
 		return integer is variable CLK_CYCLES : integer;
 	begin
 		CLK_CYCLES := NANO_SEC / (1000000000 / CLK_FRQ);
-		return CLK_CYCLES + 1; 
+		return CLK_CYCLES; 
 	end function;
 
 
@@ -139,6 +139,7 @@ begin
 						CURR_STATE_V <= V_B_PORCH;
 						RESET_TIMER_V <= '1';
 						CURR_BLANK_V <= '1';
+						RESET_V <= '1';
 					end if;
 				when V_B_PORCH => 
 					if(CURR_TIME_V = convertTime(WAIT_V_BPORCH)) then
@@ -196,6 +197,8 @@ begin
 						end if;
 					when others => CURR_STATE_H <= H_SYNC;
 				end case;
+			else
+				INC_V <= '0';
 			end if;
 		end if;
 	end process HORIZONTAL;

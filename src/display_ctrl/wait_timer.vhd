@@ -14,8 +14,8 @@ architecture BEHAV of WAIT_TIMER is
 begin
 	process(CLK, RESET)  
 		begin
-			if RESET='1' then
-				CNT<= 0;      
+			if (RESET='1' and RESET'event) then
+				CNT<= 1;      
 			elsif (CLK='1' and CLK'event) then
 				CNT<= CNT+1;
 			end if;
