@@ -23,35 +23,32 @@ begin
     WRITE: process(SYS_CLK, RESET)
     begin
         if(RESET = '1') then
-            W_R <= (others => '0');
-            W_G <= (others => '0');
-            W_B <= (others => '0');
-            W_ADDR <= (others => '0');
             cnt_color <= (others => '0');
         elsif(rising_edge(SYS_CLK)) then
-            cnt_color <= cnt_color + 1;
             if(cnt_color = 1000 * 1000 * 100 * 2) then
-                W_R <= W_R_TMP;
-                W_G <= W_G_TMP;
-
                 W_R_TMP <= not W_R_TMP;
                 W_G_TMP <= not W_G_TMP;
                 cnt_color <= (others => '0');
+            else
+                cnt_color <= cnt_color + 1;
             end if;
         end if;
     end process WRITE;
 
-    SYNCING: process(W_CLK, RESET)
+    SYNCING: process(W_CLK, RESET, cnt_sync)
     begin
-        SYNC <= '0';
-
         if(RESET = '1') then
             cnt_sync <= (others => '0');
+            W_ADDR <= (others => '0');
         elsif(rising_edge(W_CLK)) then
-            if(cnt_sync = 3) then
+            if(cnt_sync = 15) then
                 SYNC <= '1';
                 cnt_sync <= (others => '0');
+
+                W_R <= W_R_TMP;
+                W_G <= W_G_TMP;
             else
+                SYNC <= '0';
                 cnt_sync <= cnt_sync + 1;
             end if;
         end if;

@@ -111,6 +111,6 @@ begin
   HS <= h_sync_dly_reg;
   VS <= v_sync_dly_reg;
 
-  C_H <= (others=>'0');
-  C_V <= (others=>'0');
+  C_H <= h_cntr_reg(C_H_LENGTH - 1 downto 0);
+  C_V <= v_cntr_reg(C_V_LENGTH - 1 downto 0);
 end BEHAV;
