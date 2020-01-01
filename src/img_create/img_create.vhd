@@ -7,6 +7,7 @@ use ieee.numeric_std.all;
 entity IMG_CREATE is
 	port(W_R, W_G, W_B: out std_logic_vector(3 downto 0);
 	     W_ADDR: out std_logic_vector(18 downto 0);
+	     SYNC: out std_logic;
 	     W_CLK: in std_logic;
 	     SYS_CLK: in std_logic;
 	     RESET: in std_logic);
@@ -222,8 +223,8 @@ Addr_finding: process (W_CLK)
 				
 			if Count_Char_write = "111"
 				if Count_Zeile_write = "1111"
-					--vsync <= '1';
-				else vsync <= '0';
+					Sync <= '1';
+				else Sync <= '0';
 				end if;
 			end if:
 			
