@@ -12,7 +12,7 @@ end COUNTER;
 architecture BEHAV of COUNTER is
 	signal CNT: std_logic_vector(LENGTH-1 downto 0):=(others=>'0');
 begin
-	process(CLK, RESET)  
+	process(CLK, RESET, EN)  
 		begin
 			if (RESET='1') then
 				CNT<=(others=>'0');      
