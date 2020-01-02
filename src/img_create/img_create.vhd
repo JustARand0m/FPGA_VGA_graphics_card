@@ -18,13 +18,15 @@ end IMG_CREATE;
 
 architecture BEHAV of IMG_CREATE is
 
-    constant MAX_ADDR: integer := 16;
+    constant MAX_ADDR: integer := 307200; -- 640 * 480
 
     signal cnt_color: std_logic_vector(40 downto 0) := (others => '0');
     signal cnt_sync : std_logic_vector(18 downto 0) := (others => '0');
     signal W_R_TMP: std_logic_vector(3 downto 0) := (others => '1');
     signal W_G_TMP: std_logic_vector(3 downto 0) := (others => '0');
 begin
+    W_EN <= '1';
+
     WRITE: process(SYS_CLK, RESET)
     begin
         if(RESET = '1') then

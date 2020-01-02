@@ -73,13 +73,9 @@ begin
         variable BLANK_INDICATION: std_logic := '0';
 	begin
         if(RESET = '1') then
-            RAM1 <= (others => (others => ("0000", "0000", "0000")));
-            RAM2 <= (others => (others => ("0000", "0000", "0000")));
-            RAM3 <= (others => (others => ("0000", "0000", "0000")));
-
-            FRONT_BUFFER    <= R1;
-            BACK_BUFFER_RDY <= R2;
-            BACK_BUFFER_BSY <= R3;
+            RAM1 <= (others => (others => "000000000000"));
+            RAM2 <= (others => (others => "000000000000"));
+            RAM3 <= (others => (others => "000000000000"));
         else
             if(rising_edge(W_CLK)) then
                 if(W_EN = '1') then
@@ -111,10 +107,10 @@ begin
                 end if;
             end if;
             if(rising_edge(SYNC)) then
-                if(BLANK_INDICATION = '1') then
+                if(BLANK_INDICATION = '0') then
                     BACK_BUFFER_RDY  <= BACK_BUFFER_BSY;
                     BACK_BUFFER_BSY  <= BACK_BUFFER_RDY;
-                    NEW_IMAGE_RDY <= '1';
+                    NEW_IMG_RDY <= '1';
                 end if;
             end if;
         end if;
