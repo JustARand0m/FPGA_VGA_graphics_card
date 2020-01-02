@@ -10,6 +10,7 @@ architecture TESTBENCH of IMG_Create_TB is
             --Outputs
             W_R, W_G, W_B: out std_logic_vector(3 downto 0);
 	        W_ADDR: out std_logic_vector(18 downto 0);
+			SYNC: out std_logic;
 	        
             --Inputs
             W_CLK: in std_logic;
@@ -24,9 +25,9 @@ architecture TESTBENCH of IMG_Create_TB is
     signal TB_W_B:      std_logic_vector(3 downto 0)    := "0000";
     signal TB_W_ADDR:   std_logic_vector(18 downto 0)   := (others => '0');
     signal TB_W_CLK:    std_logic := '0';
-    signal TB_SYS_CLK: std_logic:= '0';
-
-    signal TB_RESET: std_logic := '0';
+    signal TB_SYS_CLK: 	std_logic:= '0';
+	signal TB_SYNC: 	std_logic:= '0';
+    signal TB_RESET: 	std_logic := '0';
 
 begin
 	INST_IMG_Create: IMG_Create port map(
@@ -39,9 +40,9 @@ begin
         SYS_CLK => TB_SYS_CLK,
 		RESET  => TB_RESET
 	);
-    CHAR0 <= 0x"34";
-
-	TB_SYS_CLK <= not TB_SYS_CLK after 20 ns;
-	TB_W_CLK <= not TB_W_CLK after 20 ns;
+    --CHAR0 <= 0x"34";
+	
+	TB_SYS_CLK <= not TB_SYS_CLK after 5 ns;
+	TB_W_CLK <= not TB_W_CLK after 10 ns;
 
 end TESTBENCH;

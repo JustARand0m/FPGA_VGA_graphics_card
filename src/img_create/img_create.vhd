@@ -8,9 +8,11 @@ entity IMG_CREATE is
 	port(W_R, W_G, W_B: out std_logic_vector(3 downto 0);
 	     W_ADDR: out std_logic_vector(18 downto 0);
 	     SYNC: out std_logic;
+		 
 	     W_CLK: in std_logic;
 	     SYS_CLK: in std_logic;
-	     RESET: in std_logic);
+	     RESET: in std_logic;
+		 W_EN: out std_logic);
 end IMG_CREATE;
 
 architecture BEHAV of IMG_CREATE is
@@ -80,7 +82,7 @@ begin
 	INST_CLOCK_MACHINE: CLOCK_MACHINE
 		port map(
 				CLK => SYS_CLK,
-				RST_GLOBAL => RST_GLOBAL,
+				RST_GLOBAL => RESET,
 				SET_SEK => '0',
 				SET_MIN => '0',
 				SET_HOUR => '0',
@@ -111,23 +113,24 @@ begin
 		port map (i_clock => W_CLK,
 				i_EN => Enable,
 				i_ADDR => ADDR,
-				o_DO => Data_Input );
+				o_DO => DATA_Input );
   
   --convert BCD to ASCII
- -- CHAR0 <= x"3" & HOUR_1;
-  --CHAR1 <= x"3" & HOUR_0;
- -- CHAR2 <= x"3A";         -- colon
- -- CHAR3 <= x"3" & MIN_1;
- -- CHAR4 <= x"3" & MIN_0;
- -- CHAR5 <= x"3A";         -- colon
- -- CHAR6 <= x"3" & SEK_1;
- -- CHAR7 <= x"3" & SEK_0;
+  CHAR0 <= x"3" & HOUR_1;
+  CHAR1 <= x"3" & HOUR_0;
+  CHAR2 <= x"3A";         -- colon
+  CHAR3 <= x"3" & MIN_1;
+  CHAR4 <= x"3" & MIN_0;
+  CHAR5 <= x"3A";         -- colon
+  CHAR6 <= x"3" & SEK_1;
+  CHAR7 <= x"3" & SEK_0;
 
   --maybe helpful: https://stackoverflow.com/questions/33584342/how-to-add-two-different-sized-vectors-vhdl
 -- -------------------process to find the correct address for charmaps ----------------------
 
 Addr_finding: process (W_CLK)
 	begin	
+
 		Enable <= '0';
 		ADDR <= "00000000000";
 		if W_CLK = '1' and W_CLK'event then
@@ -136,12 +139,13 @@ Addr_finding: process (W_CLK)
 				Count_Clk <= "0000";
 				case Count_Char is
 					when "000" => 
-						ADDR <= OFFSET+(CHAR0 (5 downto 0)*"10000")+ Count_Zeile; 	-- ('0' & Variable) because of different sized vectors
+						ADDR <= OFFSET+(SEK_0 & "10000")+ Count_Zeile; 	-- ('0' & Variable) because of different sized vectors
 						Count_Char <= "001";
 						Enable <= '1';
 						
 					when "001" => 
-						ADDR <= OFFSET+(CHAR1 (5 downto 0)*"10000")+ Count_Zeile;
+						--ADDR <= OFFSET+(CHAR1 (5 downto 0)*"10000")+ Count_Zeile;
+						ADDR <= OFFSET+(SEK_1 & "10000")+ Count_Zeile;
 						Count_Char <= "010";
 						Enable <= '1';
 						
@@ -151,12 +155,12 @@ Addr_finding: process (W_CLK)
 						Enable <= '1';
 						
 					when "011" => 
-						ADDR <= OFFSET+(CHAR3 (5 downto 0)*"10000")+ Count_Zeile;
+						ADDR <= OFFSET+(MIN_0 *"10000")+ Count_Zeile;
 						Count_Char <= "100";
 						Enable <= '1';
 						
 					when "100" => 
-						ADDR <= OFFSET+(CHAR4 (5 downto 0)*"10000")+ Count_Zeile;
+						ADDR <= OFFSET+(MIN_1 *"10000")+ Count_Zeile;
 						Count_Char <= "101";
 						Enable <= '1';
 						
@@ -166,12 +170,12 @@ Addr_finding: process (W_CLK)
 						Enable <= '1';
 						
 					when "110" => 
-						ADDR <= OFFSET+(CHAR6 (5 downto 0)*"10000")+ Count_Zeile;
+						ADDR <= OFFSET+(HOUR_0 *"10000")+ Count_Zeile;
 						Count_Char <= "111";
 						Enable <= '1';
 						
 					when "111" => 
-						ADDR <= OFFSET+(CHAR7 (5 downto 0)*"10000")+ Count_Zeile;
+						ADDR <= OFFSET+(HOUR_1 *"10000")+ Count_Zeile;
 						Count_Char <= "000";
 						Enable <= '1';
 						Count_Zeile <= Count_Zeile +1;
@@ -197,7 +201,7 @@ Addr_finding: process (W_CLK)
 --		|						|			hOFFSET = 288
 --		-------------------------			h_max = 640
 --
--- TODO Zeilen und Char Counter hochsetzen
+
 
 	Convert8to1: process (W_CLK)
 	begin	
@@ -205,8 +209,9 @@ Addr_finding: process (W_CLK)
 		W_G <= "0000";
 		W_B <= "0000";
 		W_ADDR <= "0000000000000000000";
+		W_EN <= '1';
 		if W_CLK = '1' and W_CLK'event then
-			if DATA_Input (Count_Convert) = '1' then
+			if DATA_Input(Count_Convert) = '1' then
 				W_R <= "0000";
 				W_G <= "1111";
 				W_B <= "0000";
@@ -221,12 +226,12 @@ Addr_finding: process (W_CLK)
 			if Count_Convert < 7 then Count_Convert <= Count_Convert + 1; end if;
 			Count_Convert2 <= Count_Convert2 + '1';
 				
-			if Count_Char_write = "111"
-				if Count_Zeile_write = "1111"
+			if Count_Char_write = "111" then
+				if Count_Zeile_write = "1111" then
 					Sync <= '1';
 				else Sync <= '0';
 				end if;
-			end if:
+			end if;
 			
 			if Count_Char_write = "111" then
 				Count_Char_write <= "000";
