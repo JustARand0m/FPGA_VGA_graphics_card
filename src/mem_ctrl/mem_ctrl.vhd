@@ -29,8 +29,12 @@ architecture BEHAV of MEM_CTRL is
        --     R, G, B : std_logic_vector(3 downto 0);
        -- end record;
 
-        type ram_line_type	is array (0 to 639) of std_logic_vector(11 downto 0);
-        type ram_type		is array (0 to 479) of ram_line_type;
+        --type ram_line_type	is array (0 to 639) of std_logic_vector(11 downto 0);
+        --type ram_type		is array (0 to 479) of ram_line_type;
+        
+       -- type ram_type is array (0 to 307199) of std_logic_vector(11 downto 0);
+       type ram_type is array (0 to 307199) of std_logic_vector(0 downto 0);
+        
         --type RAM_LINE_TYPE	is array (0 to 3) of RAM_PIXEL_TYPE;
         --type RAM_TYPE		is array (0 to 3) of RAM_LINE_TYPE;
 	-- signals
@@ -43,7 +47,9 @@ architecture BEHAV of MEM_CTRL is
         --signal RAM1: RAM_TYPE := (others => (others => ("0000", "0000", "0000"))); 
         --signal RAM2: RAM_TYPE := (others => (others => ("0000", "0000", "0000"))); 
         --signal RAM3: RAM_TYPE := (others => (others => ("0000", "0000", "0000"))); 
-	    signal RAM1, RAM2, RAM3: RAM_TYPE := (others => (others => "000000000000")); 
+	    
+	    --signal RAM1, RAM2, RAM3: RAM_TYPE := (others => (others => "000000000000"));
+	    signal RAM1: RAM_TYPE;
 begin
 	READ: process(R_CLK, RESET)
 	begin
@@ -52,20 +58,35 @@ begin
 			R_G <= (others=>'0');
 			R_B <= (others=>'0');
 		elsif(rising_edge(R_CLK)) then
+            --case FRONT_BUFFER is
+            --    when R1 =>
+            --        R_R <= RAM1(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(3 downto 0);
+            --        R_G <= RAM1(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(7 downto 4);
+            --        R_B <= RAM1(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(11 downto 8);
+            --    when R2 =>
+            --        R_R <= RAM2(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(3 downto 0);
+            --        R_G <= RAM2(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(7 downto 4);
+            --        R_B <= RAM2(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(11 downto 8);
+            --    when R3 =>
+            --        R_R <= RAM3(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(3 downto 0);
+            --        R_G <= RAM3(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(7 downto 4);
+            --        R_B <= RAM3(to_integer(unsigned(R_ADDR(18 downto 10))))(to_integer(unsigned(R_ADDR(9 downto 0))))(11 downto 8);
+            --end case;
             case FRONT_BUFFER is
                 when R1 =>
-                    R_R <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(3 downto 0);
-                    R_G <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(7 downto 4);
-                    R_B <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(11 downto 8);
+                    --R_R <= RAM1(to_integer(unsigned(R_ADDR)))(3 downto 0);
+                    --R_G <= RAM1(to_integer(unsigned(R_ADDR)))(7 downto 4);
+                    --R_B <= RAM1(to_integer(unsigned(R_ADDR)))(11 downto 8);
                 when R2 =>
-                    R_R <= RAM2(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(3 downto 0);
-                    R_G <= RAM2(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(7 downto 4);
-                    R_B <= RAM2(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(11 downto 8);
+                    --R_R <= RAM1(to_integer(unsigned(R_ADDR)))(3 downto 0);
+                    --R_G <= RAM1(to_integer(unsigned(R_ADDR)))(7 downto 4);
+                    --R_B <= RAM1(to_integer(unsigned(R_ADDR)))(11 downto 8);
                 when R3 =>
-                    R_R <= RAM3(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(3 downto 0);
-                    R_G <= RAM3(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(7 downto 4);
-                    R_B <= RAM3(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(11 downto 8);
+                    --R_R <= RAM1(to_integer(unsigned(R_ADDR)))(3 downto 0);
+                    --R_G <= RAM1(to_integer(unsigned(R_ADDR)))(7 downto 4);
+                    --R_B <= RAM1(to_integer(unsigned(R_ADDR)))(11 downto 8);
             end case;
+            R_R <= RAM1(to_integer(unsigned(R_ADDR))) & "110";
 		end if;
 	end process READ;
 	
@@ -73,26 +94,41 @@ begin
         variable BLANK_INDICATION: std_logic := '0';
 	begin
         if(RESET = '1') then
-            RAM1 <= (others => (others => "000000000000"));
-            RAM2 <= (others => (others => "000000000000"));
-            RAM3 <= (others => (others => "000000000000"));
+        --    RAM1 <= (others => (others => "000000000000"));
+        --    RAM2 <= (others => (others => "000000000000"));
+        --    RAM3 <= (others => (others => "000000000000"));
         else
             if(rising_edge(W_CLK)) then
                 if(W_EN = '1') then
                     case BACK_BUFFER_BSY is
                         when R1 =>
-                            RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0)  <= W_R;
-                            RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4)  <= W_G;
-                            RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
+                            --RAM1(to_integer(unsigned(W_ADDR)))(3 downto 0)  <= W_R;
+                            --RAM1(to_integer(unsigned(W_ADDR)))(7 downto 4)  <= W_G;
+                            --RAM1(to_integer(unsigned(W_ADDR)))(11 downto 8) <= W_B;	
                         when R2 =>
-                            RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0)  <= W_R;
-                            RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4)  <= W_G;
-                            RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
+                            --RAM1(to_integer(unsigned(W_ADDR)))(3 downto 0)  <= W_R;
+                            --RAM1(to_integer(unsigned(W_ADDR)))(7 downto 4)  <= W_G;
+                            --RAM1(to_integer(unsigned(W_ADDR)))(11 downto 8) <= W_B;	
                         when R3 =>
-                            RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0)  <= W_R;
-                            RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4)  <= W_G;
-                            RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
+                            --RAM1(to_integer(unsigned(W_ADDR)))(3 downto 0)  <= W_R;
+                            --RAM1(to_integer(unsigned(W_ADDR)))(7 downto 4)  <= W_G;
+                            --RAM1(to_integer(unsigned(W_ADDR)))(11 downto 8) <= W_B;	
                     end case;
+                    --case BACK_BUFFER_BSY is
+                    --    when R1 =>
+                    --       RAM1(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(3 downto 0)  <= W_R;
+                    --        RAM1(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(7 downto 4)  <= W_G;
+                    --        RAM1(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(11 downto 8) <= W_B;	
+                    --    when R2 =>
+                    --        RAM2(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(3 downto 0)  <= W_R;
+                    --        RAM2(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(7 downto 4)  <= W_G;
+                    --        RAM2(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(11 downto 8) <= W_B;	
+                    --    when R3 =>
+                    --        RAM3(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(3 downto 0)  <= W_R;
+                    --        RAM3(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(7 downto 4)  <= W_G;
+                    --        RAM3(to_integer(unsigned(W_ADDR(18 downto 10))))(to_integer(unsigned(W_ADDR(9 downto 0))))(11 downto 8) <= W_B;	
+                    --end case;
+                    RAM1(to_integer(unsigned(W_ADDR))) <= W_R;
                 end if;
             end if;
             -- prioritize frontbuffer changes to backbuffer changes, since reading is a lot slower
