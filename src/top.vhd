@@ -39,6 +39,7 @@ architecture BEHAV of TOP is
 			R_ADDR: in std_logic_vector(18 downto 0);
 			R_CLK: in std_logic;
             SYNC: in std_logic;
+            W_EN: in std_logic;
 			W_R, W_G, W_B : in std_logic_vector(3 downto 0);
 			W_ADDR: in std_logic_vector(18 downto 0);
 			W_CLK: in std_logic;
@@ -53,6 +54,7 @@ architecture BEHAV of TOP is
             W_B: out std_logic_vector(3 downto 0);
             W_ADDR: out std_logic_vector(18 downto 0);
             W_CLK: in std_logic;
+            W_EN: out std_logic;
             SYS_CLK: in std_logic;
             RESET: in std_logic;
             SYNC: out std_logic
@@ -80,6 +82,7 @@ port
 	signal IMG_MEM_R, IMG_MEM_G, IMG_MEM_B: std_logic_vector(3 downto 0);
 	signal W_ADDR, R_ADDR: std_logic_vector(18 downto 0);
 	signal PIXEL_CLK, WRITE_CLK, SYS_CLK: std_logic;
+    signal W_EN: std_logic := '0';
 	-- -------------------------- port maps ------------------------------------
 begin
 	INST_SYNC_GEN: SYNC_GEN port map(
@@ -110,6 +113,7 @@ begin
 		R_ADDR => R_ADDR,
 		R_CLK  => PIXEL_CLK,
         SYNC   => SYNC,
+        W_EN   => W_EN,
 		W_R    => IMG_MEM_R,
 		W_G    => IMG_MEM_G,
 		W_B    => IMG_MEM_B,
@@ -124,6 +128,7 @@ begin
 		W_B    => IMG_MEM_B,
 		W_ADDR => W_ADDR,
 		W_CLK  => WRITE_CLK,
+        W_EN    => W_EN,
         SYS_CLK => SYS_CLK,
         RESET   => '0',
         SYNC    => SYNC

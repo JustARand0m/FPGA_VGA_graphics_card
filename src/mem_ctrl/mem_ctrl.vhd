@@ -13,6 +13,7 @@ entity MEM_CTRL is
 	     R_CLK: in std_logic;
 	     -- INPUT
          SYNC: in std_logic;
+         W_EN: in std_logic;
 	     W_R, W_G, W_B : in std_logic_vector(3 downto 0) := "0000";
 	     W_ADDR: in std_logic_vector (18 downto 0);
 	     W_CLK: in std_logic;
@@ -37,6 +38,8 @@ architecture BEHAV of MEM_CTRL is
         signal BACK_BUFFER_RDY: BUFFER_TYPE := R2;
         signal BACK_BUFFER_BSY: BUFFER_TYPE := R3;
 
+        signal NEW_IMG_RDY: std_logic := '0';
+
         --signal RAM1: RAM_TYPE := (others => (others => ("0000", "0000", "0000"))); 
         --signal RAM2: RAM_TYPE := (others => (others => ("0000", "0000", "0000"))); 
         --signal RAM3: RAM_TYPE := (others => (others => ("0000", "0000", "0000"))); 
@@ -51,9 +54,9 @@ begin
 		elsif(rising_edge(R_CLK)) then
             case FRONT_BUFFER is
                 when R1 =>
-                    R_R <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto0))))(3 downto 0);
-                    R_G <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto0))))(7 downto 4);
-                    R_B <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto0))))(11 downto 8);
+                    R_R <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(3 downto 0);
+                    R_G <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(7 downto 4);
+                    R_B <= RAM1(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(11 downto 8);
                 when R2 =>
                     R_R <= RAM2(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(3 downto 0);
                     R_G <= RAM2(to_integer(unsigned(R_ADDR(3 downto 2))))(to_integer(unsigned(R_ADDR(1 downto 0))))(7 downto 4);
@@ -66,7 +69,7 @@ begin
 		end if;
 	end process READ;
 	
-	WRITE: process(RESET, W_CLK, BLANK, SYNC)
+	WRITE: process(RESET, W_CLK, BLANK, SYNC, NEW_IMG_RDY)
         variable BLANK_INDICATION: std_logic := '0';
 	begin
         if(RESET = '1') then
@@ -79,33 +82,39 @@ begin
             BACK_BUFFER_BSY <= R3;
         else
             if(rising_edge(W_CLK)) then
-                case BACK_BUFFER_BSY is
-                    when R1 =>
-                        RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0) <= W_R;
-                        RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4) <= W_G;
-                        RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
-                    when R2 =>
-                        RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0) <= W_R;
-                        RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4) <= W_G;
-                        RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
-                    when R3 =>
-                        RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0) <= W_R;
-                        RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4) <= W_G;
-                        RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
-                end case;
+                if(W_EN = '1') then
+                    case BACK_BUFFER_BSY is
+                        when R1 =>
+                            RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0)  <= W_R;
+                            RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4)  <= W_G;
+                            RAM1(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
+                        when R2 =>
+                            RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0)  <= W_R;
+                            RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4)  <= W_G;
+                            RAM2(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
+                        when R3 =>
+                            RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(3 downto 0)  <= W_R;
+                            RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(7 downto 4)  <= W_G;
+                            RAM3(to_integer(unsigned(W_ADDR(3 downto 2))))(to_integer(unsigned(W_ADDR(1 downto 0))))(11 downto 8) <= W_B;	
+                    end case;
+                end if;
             end if;
             -- prioritize frontbuffer changes to backbuffer changes, since reading is a lot slower
             -- than writing in our usecase.
             BLANK_INDICATION := '0';
             if(rising_edge(BLANK)) then
-                FRONT_BUFFER    <= BACK_BUFFER_RDY;
-                BACK_BUFFER_RDY <= FRONT_BUFFER;
-                BLANK_INDICATION := '1';
+                if(NEW_IMG_RDY = '1') then
+                    FRONT_BUFFER    <= BACK_BUFFER_RDY;
+                    BACK_BUFFER_RDY <= FRONT_BUFFER;
+                    BLANK_INDICATION := '1';
+                    NEW_IMG_RDY <= '0';
+                end if;
             end if;
             if(rising_edge(SYNC)) then
                 if(BLANK_INDICATION = '1') then
                     BACK_BUFFER_RDY  <= BACK_BUFFER_BSY;
                     BACK_BUFFER_BSY  <= BACK_BUFFER_RDY;
+                    NEW_IMAGE_RDY <= '1';
                 end if;
             end if;
         end if;

@@ -18,7 +18,6 @@ architecture TESTBENCH of MEM_CTRL_TB is
             R_CLK: in std_logic;
             -- INPUT
             SYNC: in std_logic;
-            W_EN: in std_logic;
             W_R, W_G, W_B : in std_logic_vector(3 downto 0) := "0000";
             W_ADDR: in std_logic_vector (18 downto 0);
             W_CLK: in std_logic;
@@ -55,7 +54,6 @@ begin
 		R_ADDR => TB_R_ADDR,
 		R_CLK  => TB_R_CLK,
         SYNC   => TB_SYNC,
-        W_EN   => '1',
 		W_R    => TB_W_R,
 		W_G    => TB_W_G,
 		W_B    => TB_W_B,
@@ -70,6 +68,7 @@ begin
     TB_W_R <= TB_FRAME_COUNTER;
     TB_W_G <= TB_FRAME_COUNTER;
     TB_W_B <= TB_FRAME_COUNTER;
+
 
     WRITE_ADR: process(TB_W_CLK) begin
         if(rising_edge(TB_W_CLK)) then
@@ -98,7 +97,5 @@ begin
             end if;
         end if;
     end process READ_ADR;
-
-    TB_RESET <= '1' after 200 ns;
 
 end TESTBENCH;
