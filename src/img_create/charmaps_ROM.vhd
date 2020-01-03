@@ -36,8 +36,9 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.STD_LOGIC_ARITH.all;
+--use IEEE.STD_LOGIC_ARITH.all;
 use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.NUMERIC_STD.all;
 
 
 --  Uncomment the following lines to use the declarations that are
@@ -49,14 +50,14 @@ entity charmaps_ROM is
   port (
     i_EN    : in  std_logic;            -- RAM Enable Input
     i_clock : in  std_logic;            -- Clock
-    i_ADDR  : in  std_logic_vector(10 downto 0);  -- 11-bit Address Input
+    i_ADDR  : in  std_logic_vector (10 downto 0);  -- 11-bit Address Input
     o_DO    : out std_logic_vector(7 downto 0)  -- 8-bit Data Output
     );
 end charmaps_ROM;
 
 architecture Behavioral of charmaps_ROM is
   signal s_EN : std_logic;
-
+  
   constant c_rom_size : natural := 2**11;
 
   type t_rom is array (c_rom_size-1 downto 0) of
@@ -583,12 +584,12 @@ architecture Behavioral of charmaps_ROM is
 
 begin
   s_EN <= i_EN;
-
   p_rom : process (i_clock)
   begin
+  o_DO <= x"12";
     if rising_edge(i_clock) then
       if s_EN = '1' then
-        o_DO <= c_rom(conv_integer(i_ADDR));
+        o_DO <= c_rom(to_integer(unsigned (i_ADDR)));
       end if;
     end if;
   end process p_rom;
