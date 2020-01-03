@@ -23,17 +23,9 @@ architecture BEHAV of IMG_CREATE is
     signal cnt_color: std_logic_vector(40 downto 0) := (others => '0');
     signal cnt_sync : std_logic_vector(18 downto 0) := (others => '0');
     
-    signal cnt_x: integer := 0;
-    signal cnt_y: integer := 0;
+    signal cnt_x: integer range 0 to 639 := 0;
+    signal cnt_y: integer range 0 to 479 := 0;
     
-    type BOX_DIR_TYPE is (LEFT, RIGHT);
-    
-    signal BOX_DIR: BOX_DIR_TYPE := RIGHT;
-    
-    signal BOX_X: integer := 100;
-    signal BOX_Y: integer := 100;
-    
-    constant BOX_SIZE: natural := 20;
     constant X_MAX: natural := 640;
     constant Y_MAX: natural := 480;
 begin
@@ -71,19 +63,19 @@ begin
                 W_R <= "1111";
                 W_G <= "0111";
                 W_B <= "0111";
-            --if(cnt_x < 200) then 
-            --    W_R <= "1111";
-            --    W_G <= "0000";
-            --    W_B <= "0000";
-            --elsif(cnt_x >= 200) and (cnt_x < 300) then 
-            --    W_R <= "0000";
-            --    W_G <= "1111";
-            --    W_B <= "0000";
-            --elsif(cnt_x >= 300) and (cnt_x < X_MAX) then 
-            --    W_R <= "0000";
-            --    W_G <= "0000";
-            --    W_B <= "1111";
-            --end if;
+				if(cnt_x < 200) then 
+				   W_R <= "1111";
+				   W_G <= "0000";
+				   W_B <= "0000";
+				elsif(cnt_x >= 200) and (cnt_x < 300) then 
+				   W_R <= "0000";
+				   W_G <= "1111";
+				   W_B <= "0000";
+				elsif(cnt_x >= 300) and (cnt_x < X_MAX) then 
+				   W_R <= "0000";
+				   W_G <= "0000";
+				   W_B <= "1111";
+				end if;
         end if;
     end process SYNCING;
 end BEHAV;
