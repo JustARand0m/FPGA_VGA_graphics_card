@@ -81,6 +81,7 @@ architecture BEHAV of SYNC_GEN is
 
 	-- reset signals for counters and timer, resets internal counters
 	signal RESET_V, RESET_H, RESET_TIMER_H, RESET_TIMER_V, RESET_COMP_H: std_logic;
+	signal RESET_V_H, RESET_H_H: std_logic;
 
 	-- internal count of timer and counter components
 	signal COUNT_H: std_logic_vector(C_H_LENGTH - 1 downto 0);
@@ -90,7 +91,7 @@ architecture BEHAV of SYNC_GEN is
 
 	signal CURR_STATE_H: H_STATE := H_SYNC;
 	signal CURR_STATE_V: V_STATE := V_SYNC;
-	-- todo optimizable?
+
 	signal CURR_BLANK_H: std_logic := '0';
 	signal CURR_BLANK_V: std_logic := '0';
 
@@ -118,6 +119,7 @@ begin
 		elsif(PIXEL_CLK = '1' and PIXEL_CLK'event) then
 			RESET_TIMER_V <= '0';
 			RESET_V <= '0';
+			RESET_V_H <= '0';
 			RESET_COMP_H <= '0';
 			case CURR_STATE_V is
 				when V_SYNC => 
@@ -131,7 +133,8 @@ begin
 					if(CURR_TIME_V = convertTime(WAIT_V_FPORCH)) then 
 						CURR_STATE_V <= V_DISPL;
 						RESET_TIMER_V <= '1';
-						RESET_COMP_H <= '1';
+						RESET_V_H <= '1';
+						RESET_V <= '1';
 						CURR_BLANK_V <= '0';
 						VS <= '1';
 					end if;
@@ -139,8 +142,8 @@ begin
 					if(CURR_TIME_V = convertTime(WAIT_V_DISPL)) then
 						CURR_STATE_V <= V_B_PORCH;
 						RESET_TIMER_V <= '1';
-						CURR_BLANK_V <= '1';
 						RESET_V <= '1';
+						CURR_BLANK_V <= '1';
 						VS <= '1';
 					end if;
 				when V_B_PORCH => 
@@ -158,59 +161,54 @@ begin
 	HORIZONTAL: process(PIXEL_CLK, RESET_COMP_H, RESET)
 	begin
 		if(RESET = '1' or RESET_COMP_H = '1') then
-			RESET_H <= '1';
+			RESET_H_H <= '1';
 			RESET_TIMER_H <= '1';
 			CURR_STATE_H <= H_SYNC;
 
 		elsif (PIXEL_CLK = '1' and PIXEL_CLK'event) then
-			RESET_H <= '0';
+			RESET_H_H <= '0';
 			RESET_TIMER_H <= '0';
-			--if(CURR_STATE_V = V_DISPL) then
-				case CURR_STATE_H is 
-					when H_SYNC => 
-						if(CURR_STATE_V = V_DISPL) then
-							INC_V <= '0';
-						end if;
-						if(CURR_TIME_H = convertTime(WAIT_H_SYNC)) then 
-							CURR_STATE_H <= H_F_PORCH;
-							RESET_TIMER_H <= '1';
-							CURR_BLANK_H <= '1';
-							HS <= '1';
-						end if;
-					when H_F_PORCH => 
-						if(CURR_TIME_H = convertTime(WAIT_H_FPORCH)) then
-							CURR_STATE_H <= H_DISPL;
-							RESET_TIMER_H <= '1';	
-							INC_H <= '1';
-							CURR_BLANK_H <= '0';
-							HS <= '1';
-						end if;
-					when H_DISPL => 
-						if(CURR_TIME_H = convertTime(WAIT_H_DISPL)) then
-							INC_H <= '0';
-							CURR_STATE_H <= H_B_PORCH;
-							RESET_TIMER_H <= '1';
-							CURR_BLANK_H <= '1';
-							RESET_H <= '1';
-							HS <= '1';
-						end if;
-					when H_B_PORCH => 
-						if(CURR_TIME_H = convertTime(WAIT_H_BPORCH)) then
-							if(CURR_STATE_V = V_DISPL) then
-								INC_V <= '1';
-							end if;
-							CURR_STATE_H <= H_SYNC;
-							RESET_TIMER_H <= '1';
-							CURR_BLANK_H <= '1';
-							HS <= '0';
-						end if;
-					when others => CURR_STATE_H <= H_SYNC;
-				end case;
-			--else
-			--	INC_V <= '0';
-			--end if;
+			case CURR_STATE_H is 
+				when H_SYNC => 
+					if(CURR_TIME_H = convertTime(WAIT_H_SYNC)) then 
+						CURR_STATE_H <= H_F_PORCH;
+						RESET_TIMER_H <= '1';
+						CURR_BLANK_H <= '1';
+						HS <= '1';
+					end if;
+				when H_F_PORCH => 
+					if(CURR_TIME_H = convertTime(WAIT_H_FPORCH)) then
+						CURR_STATE_H <= H_DISPL;
+						RESET_TIMER_H <= '1';	
+						INC_H <= '1';
+						CURR_BLANK_H <= '0';
+						HS <= '1';
+					end if;
+				when H_DISPL => 
+					if(CURR_TIME_H = convertTime(WAIT_H_DISPL)) then
+						INC_H <= '0';
+						CURR_STATE_H <= H_B_PORCH;
+						RESET_TIMER_H <= '1';
+						CURR_BLANK_H <= '1';
+						RESET_H_H <= '1';
+						HS <= '1';
+					end if;
+				when H_B_PORCH => 
+					if((CURR_TIME_H = convertTime(WAIT_H_BPORCH) - 1) and (CURR_STATE_V = V_DISPL)) then
+						INC_V <= '1';
+					end if;
+					if(CURR_TIME_H = convertTime(WAIT_H_BPORCH)) then
+						INC_V <= '0';
+						CURR_STATE_H <= H_SYNC;
+						RESET_TIMER_H <= '1';
+						CURR_BLANK_H <= '1';
+						HS <= '0';
+					end if;
+				when others => CURR_STATE_H <= H_SYNC;
+			end case;
 		end if;
 	end process HORIZONTAL;
+	RESET_H <= RESET_V_H or RESET_H_H;
 	C_H <= COUNT_H;
 	C_V <= COUNT_V;
 	BLANK <= CURR_BLANK_H or CURR_BLANK_V;
