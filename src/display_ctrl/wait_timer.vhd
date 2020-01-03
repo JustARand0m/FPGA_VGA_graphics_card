@@ -13,11 +13,13 @@ architecture BEHAV of WAIT_TIMER is
 	signal CNT: integer range 0 to INT_RANGE := 0;
 begin
 	process(CLK, RESET)  
-		begin
-			if (RESET='1' and RESET'event) then
-				CNT<= 1;      
-			elsif (CLK='1' and CLK'event) then
-				CNT<= CNT+1;
+		begin      
+			if (CLK='1' and CLK'event) then
+			    if(RESET='1') then
+			        CNT<= 1;
+			    else
+				    CNT<= CNT+1;
+				end if;
 			end if;
 	end process;
 	Q <= CNT;

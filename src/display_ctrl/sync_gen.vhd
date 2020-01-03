@@ -69,7 +69,7 @@ architecture BEHAV of SYNC_GEN is
 		return integer is variable CLK_CYCLES : integer;
 	begin
 		CLK_CYCLES := NANO_SEC / (1000000000 / CLK_FRQ);
-		return CLK_CYCLES; 
+		return CLK_CYCLES - 1; 
 	end function;
 
 
