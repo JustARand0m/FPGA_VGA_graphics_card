@@ -3,15 +3,14 @@ use ieee.std_logic_1164.all;
 
 entity SYNC_GEN is
 	generic(
-	       C_H_LENGTH: integer := 10;
-	       C_V_LENGTH: integer := 9
+	       H_LENGTH: integer := 479;
+	       V_LENGTH: integer := 639
 	);
 
 	port(
 		HS: out std_logic := '0';
 		VS: out std_logic := '0';
-		C_H: out std_logic_vector (C_H_LENGTH - 1 downto 0);
-		C_V: out std_logic_vector (C_V_LENGTH - 1 downto 0);
+        ADDR: out integer range 0 to (H_LENGTH) * (V_LENGTH);
 		BLANK: out std_logic;
 		PIXEL_CLK: in std_logic;
 		RESET: in std_logic
@@ -39,20 +38,13 @@ architecture BEHAV of SYNC_GEN is
 
 
 	---------components---------
-
-	component COUNTER is
-		generic(LENGTH: integer);
-		port(
-			CLK, RESET, EN: in std_logic;
-			Q: out std_logic_vector(LENGTH-1 downto 0));
-	end component COUNTER;
 	
-	component WAIT_TIMER is
+	component COUNTER is
 		generic(INT_RANGE: integer);
 		port(
-			CLK, RESET: in std_logic;
+			CLK, RESET, EN: in std_logic;
 			Q: out integer range 0 to INT_RANGE);
-	end component WAIT_TIMER;
+	end component COUNTER;
 	
 	
 	---------types---------
@@ -84,8 +76,8 @@ architecture BEHAV of SYNC_GEN is
 	signal RESET_V_H, RESET_H_H: std_logic;
 
 	-- internal count of timer and counter components
-	signal COUNT_H: std_logic_vector(C_H_LENGTH - 1 downto 0);
-	signal COUNT_V: std_logic_vector(C_V_LENGTH - 1 downto 0);
+	signal COUNT_H: integer range 0 to H_LENGTH;
+	signal COUNT_V: integer range 0 to V_LENGTH;
 	signal CURR_TIME_H: integer range 0 to INT_RANGE_TIMER_H;
 	signal CURR_TIME_V: integer range 0 to INT_RANGE_TIMER_V;
 
@@ -97,17 +89,17 @@ architecture BEHAV of SYNC_GEN is
 
 begin
 	COUNTER_V: COUNTER
-		generic map(LENGTH => C_V_LENGTH)
+		generic map(INT_RANGE => V_LENGTH)
 		port map(CLK => PIXEL_CLK, EN => INC_V, RESET => RESET_V, Q => COUNT_V);
 	COUNTER_H: COUNTER
-		generic map(LENGTH => C_H_LENGTH)
+		generic map(INT_RANGE => H_LENGTH)
 		port map(CLK => PIXEL_CLK, EN => INC_H, RESET => RESET_H, Q => COUNT_H);
-	TIMER_H: WAIT_TIMER
+	TIMER_H: COUNTER
 		generic map(INT_RANGE => INT_RANGE_TIMER_H)
-		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER_H, Q => CURR_TIME_H);
-	TIMER_V: WAIT_TIMER
+		port map(CLK => PIXEL_CLK, EN => '1', RESET => RESET_TIMER_H, Q => CURR_TIME_H);
+	TIMER_V: COUNTER
 		generic map(INT_RANGE => INT_RANGE_TIMER_V)
-		port map(CLK => PIXEL_CLK, RESET => RESET_TIMER_V, Q => CURR_TIME_V);
+		port map(CLK => PIXEL_CLK, EN => '1', RESET => RESET_TIMER_V, Q => CURR_TIME_V);
 
 	VERTICAL: process (PIXEL_CLK, RESET) 
 	begin
@@ -209,7 +201,6 @@ begin
 		end if;
 	end process HORIZONTAL;
 	RESET_H <= RESET_V_H or RESET_H_H;
-	C_H <= COUNT_H;
-	C_V <= COUNT_V;
+	ADDR <= COUNT_V * V_LENGTH + COUNT_H;
 	BLANK <= CURR_BLANK_H or CURR_BLANK_V;
 end BEHAV;

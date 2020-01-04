@@ -2,6 +2,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity TOP is
 	port(
@@ -16,8 +17,7 @@ architecture BEHAV of TOP is
 	component SYNC_GEN is
 		port(
 			HS, VS: out std_logic;
-			C_H: out std_logic_vector (9 downto 0);
-			C_V: out std_logic_vector (8 downto 0);
+            ADDR: out integer;
 			BLANK: out std_logic;
 			PIXEL_CLK: in std_logic;
 			RESET: in std_logic
@@ -64,13 +64,15 @@ port
 	signal IMG_MEM_R, IMG_MEM_G, IMG_MEM_B: std_logic_vector(3 downto 0);
 	signal W_ADDR, R_ADDR: std_logic_vector(18 downto 0);
 	signal PIXEL_CLK, WRITE_CLK, SYS_CLK: std_logic;
+	signal CONV_ADDR: integer;
 	-- -------------------------- port maps ------------------------------------
 begin
+    CONV_ADDR <= to_integer(unsigned(R_ADDR));
+    
 	INST_SYNC_GEN: SYNC_GEN port map(
 		HS        => PMOD_HS,
 		VS        => PMOD_VS,
-		C_H       => R_ADDR(9 downto 0),
-		C_V       => R_ADDR(18 downto 10),
+        ADDR      => CONV_ADDR,
 		BLANK     => BLANK,
 		PIXEL_CLK => PIXEL_CLK,
 		RESET     => '0'
