@@ -69,6 +69,10 @@ signal DATA_Input: std_logic_vector(7 downto 0);					-- 8-bit Data Input from ch
 signal ADDR: std_logic_vector (10 downto 0);  						-- 11-bit Address Output to charmaps
 signal Count_Zeile_write: std_logic_vector (3 downto 0):= "0000";	-- 16 row counter for writing to memory
 signal Count_Char_write: std_logic_vector(2 downto 0) := "000";		-- char counter for writing to memory
+signal Count_colour: std_logic_vector (1 downto 0) := "00";			-- Counter for different colours
+signal W_R_Colour: std_logic_vector (3 downto 0) := "0100";			-- Signal for colour changing
+signal W_G_Colour: std_logic_vector (3 downto 0) := "0100";
+signal W_B_Colour: std_logic_vector (3 downto 0) := "0100";
 --constants for process Addr_finding
 --constant OFFSET:  std_logic_vector (10 downto 0) := "01100000000"; 	--Offset wegen charmaps 768 (Sign "0" row 1 starts at address 768)
 -- constant for process Convert8to1
@@ -220,10 +224,45 @@ Addr_finding: process (W_CLK)
 		if W_CLK = '1' and W_CLK'event then
 			if DATA_Input /= x"12" then
 			if DATA_Input(Count_Convert) = '1' then
-				W_R <= "0000";
-				W_G <= "1111";
-				W_B <= "0000";
-				W_ADDR <= (vOFFSET * h_max + (("00000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");	--pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8)  
+				case Count_colour is
+					when "00" => 
+						W_B_Colour <= "0100";
+						W_G_Colour <= "0100";
+						W_R_Colour <= W_R_Colour + "0001";
+						if W_R_Colour = "1111" then
+							W_R_Colour <=  "0100";
+							Count_colour <= Count_colour + "01";
+						end if;
+					when "01" =>
+						W_B_Colour <= "0100";
+						W_R_Colour <= "0100";
+						W_G_Colour <= W_G_Colour + "0001";
+						if W_G_Colour = "1111" then
+							W_G_Colour <=  "0100";
+							Count_colour <= Count_colour + "01";
+						end if;
+					when "10" =>
+						W_R_Colour <= "0100";
+						W_G_Colour <= "0100";
+						W_B_Colour <= W_B_Colour + "0001";
+						if W_B_Colour = "1111" then
+							W_B_Colour <=  "0100";
+							Count_colour <= Count_colour + "01";
+						end if;
+						if Count_colour = "10" then 
+							Count_colour <= "00";
+						end if;
+					when others => 
+						W_G_Colour <= "1111";
+						if Count_colour = "11" then 
+							Count_colour <= "00";
+						end if;
+					end case;
+				W_R <= W_R_Colour;
+				W_G <= W_G_Colour;
+				W_B <= W_B_Colour;
+				W_ADDR <= (vOFFSET * h_max + (("00000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");	--pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8) 
+
 			elsif DATA_Input (Count_Convert) = '0' then
 				W_R <= "0000";
 				W_G <= "0000";

@@ -3,6 +3,10 @@ quietly WaveActivateNextPane {} 0
 add wave -noupdate /img_create_tb/INST_IMG_Create/W_R
 add wave -noupdate /img_create_tb/INST_IMG_Create/W_G
 add wave -noupdate /img_create_tb/INST_IMG_Create/W_B
+add wave -noupdate /img_create_tb/INST_IMG_Create/W_R_Colour
+add wave -noupdate /img_create_tb/INST_IMG_Create/W_G_Colour
+add wave -noupdate /img_create_tb/INST_IMG_Create/W_B_Colour
+add wave -noupdate /img_create_tb/INST_IMG_Create/Count_colour
 add wave -noupdate /img_create_tb/INST_IMG_Create/W_ADDR
 add wave -noupdate /img_create_tb/INST_IMG_Create/SYNC
 add wave -noupdate /img_create_tb/INST_IMG_Create/W_CLK
@@ -30,9 +34,9 @@ add wave -noupdate /img_create_tb/INST_IMG_Create/DATA_Input
 add wave -noupdate /img_create_tb/INST_IMG_Create/ADDR
 add wave -noupdate /img_create_tb/INST_IMG_Create/INST_charmaps_ROM/i_clock
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {480000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {8610000 ps} 0}
 quietly wave cursor active 1
-configure wave -namecolwidth 301
+configure wave -namecolwidth 362
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
 configure wave -signalnamewidth 0
@@ -46,4 +50,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {983416 ps}
+WaveRestoreZoom {0 ps} {10048940 ps}
