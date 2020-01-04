@@ -7,116 +7,399 @@ z2
 !i10e 25
 !i10f 100
 cModel Technology
-Z0 d/media/sf_shared/FPGA_VGA_graphics_card
-Eimg_create
-w1577632725
+d/media/sf_shared/FPGA_VGA_graphics_card
+Ecounter
+Z0 w1578131973
 Z1 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
 Z2 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
-Z3 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
-Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
-Z5 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
-d/media/sf_shared/TEST
-8/media/sf_shared/TEST/src/img_create/img_create_template.vhd
-F/media/sf_shared/TEST/src/img_create/img_create_template.vhd
+Z3 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z4 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Z5 dC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card
+Z6 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/utils/counter.vhd
+Z7 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/utils/counter.vhd
 l0
-L6
-VkM8C<13Gf243^2MJKP5N?3
-!s100 6iiT6X2YP5EOJ<Z8`@EFS2
-Z6 OL;C;10.6c;65
+L5
+VCGPDAl9SCfW94IAP3KjG;0
+!s100 =MGMeA:6d1]MlQ=RNn_L23
+Z8 OL;C;10.6c;65
 32
-!s110 1577632736
+Z9 !s110 1578155931
 !i10b 1
-!s108 1577632735.000000
-!s90 -reportprogress|300|-work|work|/media/sf_shared/TEST/src/img_create/img_create_template.vhd|
-!s107 /media/sf_shared/TEST/src/img_create/img_create_template.vhd|
+Z10 !s108 1578155931.000000
+Z11 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/utils/counter.vhd|
+Z12 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/utils/counter.vhd|
 !i113 0
-Z7 o-work work
-Z8 tExplicit 1 CvgOpt 0
-Emem_ctrl
-Z9 w1577565759
-R1
-R2
-R3
-R4
-R5
-R0
-Z10 8/media/sf_shared/FPGA_VGA_graphics_card/src/mem_ctrl/mem_ctrl.vhd
-Z11 F/media/sf_shared/FPGA_VGA_graphics_card/src/mem_ctrl/mem_ctrl.vhd
-l0
-L8
-VAWO<?2<gRVcfk>9k[g[RN2
-!s100 mbeF@k^SQ=c]@i1m9E]gn0
-R6
-32
-Z12 !s110 1577565825
-!i10b 1
-Z13 !s108 1577565824.000000
-Z14 !s90 -reportprogress|300|-work|work|/media/sf_shared/FPGA_VGA_graphics_card/src/mem_ctrl/mem_ctrl.vhd|
-Z15 !s107 /media/sf_shared/FPGA_VGA_graphics_card/src/mem_ctrl/mem_ctrl.vhd|
-!i113 0
-R7
-R8
+Z13 o-work work
+Z14 tExplicit 1 CvgOpt 0
 Abehav
 R1
 R2
 R3
 R4
-R5
-DEx4 work 8 mem_ctrl 0 22 AWO<?2<gRVcfk>9k[g[RN2
+DEx4 work 7 counter 0 22 CGPDAl9SCfW94IAP3KjG;0
 32
-R12
-l44
-L23
-VABXRG3`GN`9K>VeaMPC2f3
-!s100 b04W`c:zlZFj@WF]7NimW0
-R6
+R9
+l14
+L12
+V_=miNl65=>YJm^ATO:0JC2
+!s100 Ogk7]oB4nfYS6Z0cYD8?C3
+R8
 !i10b 1
+R10
+R11
+R12
+!i113 0
 R13
 R14
-R15
-!i113 0
-R7
-R8
-Emem_ctrl_tb
-Z16 w1577568695
+Edual_ram
+Z15 w1578156571
 R1
 R2
+Z16 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+R3
 R4
 R5
-R0
-Z17 8/media/sf_shared/FPGA_VGA_graphics_card/tb/mem_ctrl_tb.vhd
-Z18 F/media/sf_shared/FPGA_VGA_graphics_card/tb/mem_ctrl_tb.vhd
+Z17 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/mem_ctrl/dual_ram.vhd
+Z18 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/mem_ctrl/dual_ram.vhd
 l0
 L7
-VSU_aF3T;b3QHSgBGH;P1X1
-!s100 WXlzAR:mQh4A3[J]dlj;b3
-R6
-32
-Z19 !s110 1577568643
-!i10b 1
-Z20 !s108 1577568643.000000
-Z21 !s90 -reportprogress|300|-work|work|/media/sf_shared/FPGA_VGA_graphics_card/tb/mem_ctrl_tb.vhd|
-Z22 !s107 /media/sf_shared/FPGA_VGA_graphics_card/tb/mem_ctrl_tb.vhd|
-!i113 0
-R7
+V7?Sz>z2zU^i<;d8XiQU571
+!s100 bPJiB<SnT?EEQSCn0L0Gz3
 R8
-Atestbench
+32
+Z19 !s110 1578156588
+!i10b 1
+Z20 !s108 1578156588.000000
+Z21 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/mem_ctrl/dual_ram.vhd|
+Z22 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/mem_ctrl/dual_ram.vhd|
+!i113 0
+R13
+R14
+Abehav
 R1
 R2
+R16
+R3
 R4
-R5
-DEx4 work 11 mem_ctrl_tb 0 22 SU_aF3T;b3QHSgBGH;P1X1
+DEx4 work 8 dual_ram 0 22 7?Sz>z2zU^i<;d8XiQU571
 32
 R19
-l45
-L10
-VOLnzJ=1H]=T:fJj:gj6lQ3
-!s100 41:2kDK>05n@S?T@W2jJf3
-R6
+l24
+L20
+V>9jn`1a1k@TGWb9]d5cab1
+!s100 Z<EaiO[fd@Sbco4KUcGWW0
+R8
 !i10b 1
 R20
 R21
 R22
 !i113 0
-R7
+R13
+R14
+Eimg_create
+Z23 w1578155849
+R1
+R2
+R16
+R3
+R4
+R5
+Z24 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/img_create/img_create.vhd
+Z25 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/img_create/img_create.vhd
+l0
+L6
+V]FD2?MY<k7>ALkb]deZ_U1
+!s100 <G1I1@5=X4YS^D7GH96UR3
 R8
+32
+Z26 !s110 1578155918
+!i10b 1
+Z27 !s108 1578155918.000000
+Z28 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/img_create/img_create.vhd|
+Z29 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/img_create/img_create.vhd|
+!i113 0
+R13
+R14
+Abehav
+R1
+R2
+R16
+R3
+R4
+DEx4 work 10 img_create 0 22 ]FD2?MY<k7>ALkb]deZ_U1
+32
+R26
+l40
+L19
+V^FUDeQ7^lM^mMfRlU:50L0
+!s100 i=D]fng430JL2@WP^A4fk1
+R8
+!i10b 1
+R27
+R28
+R29
+!i113 0
+R13
+R14
+Eintegration_tb
+Z30 w1578154042
+R1
+R2
+R16
+R3
+R4
+R5
+Z31 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/tb/integration_tb.vhd
+Z32 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/tb/integration_tb.vhd
+l0
+L8
+VORjXKenTZ]oZoV67TkLFC0
+!s100 8Bdfz8kTZhVP:lX47aCBU2
+R8
+32
+Z33 !s110 1578155938
+!i10b 1
+Z34 !s108 1578155938.000000
+Z35 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/tb/integration_tb.vhd|
+Z36 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/tb/integration_tb.vhd|
+!i113 0
+R13
+R14
+Atestbench
+R1
+R2
+R16
+R3
+R4
+DEx4 work 14 integration_tb 0 22 ORjXKenTZ]oZoV67TkLFC0
+32
+R33
+l78
+L11
+V84JWHV3PPz1dOBV`2>NWM2
+!s100 dD6<NaT3Ki38mOdam=H292
+R8
+!i10b 1
+R34
+R35
+R36
+!i113 0
+R13
+R14
+Emem_ctrl
+Z37 w1578146920
+R1
+R2
+R16
+R3
+R4
+R5
+Z38 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/mem_ctrl/mem_ctrl.vhd
+Z39 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/mem_ctrl/mem_ctrl.vhd
+l0
+L8
+V`6lZnA8fz;VNh@?bnzNX?3
+!s100 cP[NObf^oVOkCnkE9n>XR0
+R8
+32
+Z40 !s110 1578155927
+!i10b 1
+Z41 !s108 1578155927.000000
+Z42 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/mem_ctrl/mem_ctrl.vhd|
+Z43 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/mem_ctrl/mem_ctrl.vhd|
+!i113 0
+R13
+R14
+Abehav
+R1
+R2
+R16
+R3
+R4
+DEx4 work 8 mem_ctrl 0 22 `6lZnA8fz;VNh@?bnzNX?3
+32
+R40
+l53
+L24
+VI8@HlI7^k7R73bVD5jVG<1
+!s100 <eLn`5`Iic9R]a@nW=^[73
+R8
+!i10b 1
+R41
+R42
+R43
+!i113 0
+R13
+R14
+Emem_ctrl_tb
+Z44 w1577974806
+R1
+R2
+R16
+R3
+R4
+R5
+Z45 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/tb/mem_ctrl_tb.vhd
+Z46 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/tb/mem_ctrl_tb.vhd
+l0
+L8
+Vh[588j0oCEhFUh0A[z^>E2
+!s100 AcMbFG05kR:6L<f_YHidG2
+R8
+32
+Z47 !s110 1578137172
+!i10b 1
+Z48 !s108 1578137172.000000
+Z49 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/tb/mem_ctrl_tb.vhd|
+Z50 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/tb/mem_ctrl_tb.vhd|
+!i113 0
+R13
+R14
+Atestbench
+R1
+R2
+R16
+R3
+R4
+DEx4 work 11 mem_ctrl_tb 0 22 h[588j0oCEhFUh0A[z^>E2
+32
+R47
+l49
+L11
+VARH`mjz2m][EWmzb3]RYQ3
+!s100 IC<M`l1TC=W0CYzQ0:nN81
+R8
+!i10b 1
+R48
+R49
+R50
+!i113 0
+R13
+R14
+Esync_gen
+Z51 w1578152435
+R3
+R4
+R5
+Z52 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/display_ctrl/sync_gen.vhd
+Z53 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/display_ctrl/sync_gen.vhd
+l0
+L4
+VnHidba]MIKXYdSZF4]2MO3
+!s100 1=TCD6UTWFkhKf8bG2H@Z2
+R8
+32
+Z54 !s110 1578155923
+!i10b 1
+Z55 !s108 1578155923.000000
+Z56 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/display_ctrl/sync_gen.vhd|
+Z57 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/display_ctrl/sync_gen.vhd|
+!i113 0
+R13
+R14
+Abehav
+R3
+R4
+DEx4 work 8 sync_gen 0 22 nHidba]MIKXYdSZF4]2MO3
+32
+R54
+l98
+L21
+V_T]1KP[>L<`I<MM>?@aUj2
+!s100 QGl2QPm6:RKZzUX`5cR2k0
+R8
+!i10b 1
+R55
+R56
+R57
+!i113 0
+R13
+R14
+Etop
+Z58 w1578151904
+R1
+R2
+R16
+R3
+R4
+R5
+Z59 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/top.vhd
+Z60 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/top.vhd
+l0
+L8
+VI<n=E0W3QB6`Yc6OeY^Uo1
+!s100 8Vm5`hTUBLC:?Gd4i_GkD3
+R8
+32
+Z61 !s110 1578152376
+!i10b 1
+Z62 !s108 1578152376.000000
+Z63 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/top.vhd|
+Z64 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/top.vhd|
+!i113 0
+R13
+R14
+Abehav
+R1
+R2
+R16
+R3
+R4
+DEx4 work 3 top 0 22 I<n=E0W3QB6`Yc6OeY^Uo1
+l89
+L16
+VI;H:_mMa_D]8=DGzH7G5;2
+!s100 I>58:o2LG:^n@:Gn4:cZG1
+R8
+32
+R61
+!i10b 1
+R62
+R63
+R64
+!i113 0
+R13
+R14
+Ewait_timer
+R0
+R1
+R2
+R3
+R4
+R5
+Z65 8C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/display_ctrl/wait_timer.vhd
+Z66 FC:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/display_ctrl/wait_timer.vhd
+l0
+L5
+V9;>D8[AKIC?O?kM^n`9o71
+!s100 2?^j11cVH9kZ5:gbcDQKb0
+R8
+32
+R54
+!i10b 1
+R55
+Z67 !s90 -reportprogress|300|-work|work|C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/display_ctrl/wait_timer.vhd|
+Z68 !s107 C:/Users/brm47801/Desktop/FPGA TESTING/FPGA_VGA_graphics_card/src/display_ctrl/wait_timer.vhd|
+!i113 0
+R13
+R14
+Abehav
+R1
+R2
+R3
+R4
+DEx4 work 10 wait_timer 0 22 9;>D8[AKIC?O?kM^n`9o71
+32
+R54
+l14
+L12
+VbYOhzRUfG2SY9PKZDI^Qf1
+!s100 IhT4hUCh6^acgI=CH8S:51
+R8
+!i10b 1
+R55
+R67
+R68
+!i113 0
+R13
+R14

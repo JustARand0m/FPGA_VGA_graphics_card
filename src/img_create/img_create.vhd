@@ -25,6 +25,7 @@ architecture BEHAV of IMG_CREATE is
     
     signal cnt_x: integer := 0;
     signal cnt_y: integer := 0;
+	signal index: integer := 0;
     
     type BOX_DIR_TYPE is (LEFT, RIGHT);
     
@@ -66,24 +67,18 @@ begin
     SYNCING: process(W_CLK, RESET, cnt_sync)
     begin
         if(rising_edge(W_CLK)) then
-            W_ADDR <= std_logic_vector(to_unsigned((cnt_y * Y_MAX + cnt_x), W_ADDR'length));
+			index <= (cnt_y * X_MAX + cnt_x);
+            W_ADDR <= std_logic_vector(to_unsigned((cnt_y * X_MAX + cnt_x), W_ADDR'length));
+			--W_ADDR <= (std_logic_vector(to_unsigned(cnt_y, 9)) & std_logic_vector(to_unsigned(cnt_x, 10)));
             --W_ADDR <= (others => '0');
-                W_R <= "1111";
-                W_G <= "0111";
-                W_B <= "0111";
-            --if(cnt_x < 200) then 
             --    W_R <= "1111";
-            --    W_G <= "0000";
-            --    W_B <= "0000";
-            --elsif(cnt_x >= 200) and (cnt_x < 300) then 
-            --    W_R <= "0000";
-            --    W_G <= "1111";
-            --    W_B <= "0000";
-            --elsif(cnt_x >= 300) and (cnt_x < X_MAX) then 
-            --    W_R <= "0000";
-            --    W_G <= "0000";
-            --    W_B <= "1111";
-            --end if;
+            --    W_G <= "0111";
+            --    W_B <= "0111";
+            if((cnt_y mod 2) = 0) then 
+                W_R <= "1111";
+            else
+                W_R <= "0011";
+            end if;
         end if;
     end process SYNCING;
 end BEHAV;

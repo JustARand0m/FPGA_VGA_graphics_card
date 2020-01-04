@@ -2,6 +2,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all; 
+use ieee.std_logic_unsigned.all;
 
 entity TOP is
 	port(
@@ -82,14 +84,17 @@ port
 	signal IMG_MEM_R, IMG_MEM_G, IMG_MEM_B: std_logic_vector(3 downto 0);
 	signal W_ADDR, R_ADDR: std_logic_vector(18 downto 0);
 	signal PIXEL_CLK, WRITE_CLK, SYS_CLK: std_logic;
-    signal W_EN: std_logic := '0';
+	signal W_EN: std_logic := '0';
+	
+	signal CONV_H: std_logic_vector(9 downto 0);
+	signal CONV_V: std_logic_vector(8 downto 0);
 	-- -------------------------- port maps ------------------------------------
 begin
 	INST_SYNC_GEN: SYNC_GEN port map(
 		HS        => PMOD_HS,
 		VS        => PMOD_VS,
-		C_H       => R_ADDR(9 downto 0),
-		C_V       => R_ADDR(18 downto 10),
+		C_H       => CONV_H,
+		C_V       => CONV_V,
 		BLANK     => BLANK,
 		PIXEL_CLK => PIXEL_CLK,
 		RESET     => '0'
@@ -110,7 +115,7 @@ begin
 		R_R    => MEM_BLANK_R,
 		R_G    => MEM_BLANK_G,
 		R_B    => MEM_BLANK_B,
-		R_ADDR => R_ADDR,
+		R_ADDR => std_logic_vector(to_unsigned(to_integer(unsigned(CONV_V)) * 480 + to_integer(unsigned(CONV_H)), R_ADDR'length)),
 		R_CLK  => PIXEL_CLK,
         SYNC   => SYNC,
         W_EN   => W_EN,
