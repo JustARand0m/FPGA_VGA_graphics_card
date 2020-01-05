@@ -75,7 +75,6 @@ begin
 	    W_CLK => W_CLK
 	);
 
-
 	READ_PROCESS: process(R_CLK, RAM_1_OUT, RAM_2_OUT)
 	begin
 		if(rising_edge(R_CLK)) then

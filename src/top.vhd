@@ -88,8 +88,12 @@ port
 	
 	signal CONV_H: std_logic_vector(9 downto 0);
 	signal CONV_V: std_logic_vector(8 downto 0);
+	
+	signal TOP_R_ADDR:std_logic_vector(18 downto 0);
 	-- -------------------------- port maps ------------------------------------
 begin
+    TOP_R_ADDR <= std_logic_vector(to_unsigned(to_integer(unsigned(CONV_V)) * 640 + to_integer(unsigned(CONV_H)), 19));
+
 	INST_SYNC_GEN: SYNC_GEN port map(
 		HS        => PMOD_HS,
 		VS        => PMOD_VS,
@@ -115,7 +119,7 @@ begin
 		R_R    => MEM_BLANK_R,
 		R_G    => MEM_BLANK_G,
 		R_B    => MEM_BLANK_B,
-		R_ADDR => std_logic_vector(to_unsigned(to_integer(unsigned(CONV_V)) * 480 + to_integer(unsigned(CONV_H)), R_ADDR'length)),
+		R_ADDR => TOP_R_ADDR,
 		R_CLK  => PIXEL_CLK,
         SYNC   => SYNC,
         W_EN   => W_EN,
