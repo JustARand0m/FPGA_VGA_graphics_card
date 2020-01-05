@@ -139,10 +139,9 @@ begin
 
 Addr_finding: process (W_CLK)
 	begin	
-
-		Enable <= '1';
-		ADDR <= "00000000000";
 		if rising_edge (W_CLK) then --W_CLK = '1' and W_CLK'event 
+			Enable <= '1';
+			ADDR <= "00000000000";
 			Count_Clk <= Count_Clk + 1;
 			if Count_Clk = "111" then
 				Count_Clk <= "000";
@@ -216,12 +215,12 @@ Addr_finding: process (W_CLK)
 
 	Convert8to1: process (W_CLK)
 	begin	
-		W_R <= "0000";
-		W_G <= "0000";
-		W_B <= "0000";
-		W_ADDR <= "0000000000000000000";
-		W_EN <= '1';
 		if W_CLK = '1' and W_CLK'event then
+			W_R <= "0000";
+			W_G <= "0000";
+			W_B <= "0000";
+			W_ADDR <= "0000000000000000000";
+			W_EN <= '1';
 			if DATA_Input /= x"12" then
 			if DATA_Input(Count_Convert) = '1' then
 				case Count_colour is
