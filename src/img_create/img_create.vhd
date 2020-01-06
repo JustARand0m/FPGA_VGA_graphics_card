@@ -67,16 +67,17 @@ signal Count_Convert: integer range 0 to 7 := 7; 					-- 8 bit of Data_Input
 signal Count_Convert2: std_logic_vector (2 downto 0) := "000";		-- 8 bit of Data_Input but now in verctor for Address 	
 signal DATA_Input: std_logic_vector(7 downto 0);					-- 8-bit Data Input from charmaps
 signal ADDR: std_logic_vector (10 downto 0);  						-- 11-bit Address Output to charmaps
-signal Count_Zeile_write: std_logic_vector (3 downto 0):= "0000";	-- 16 row counter for writing to memory
+signal Count_Zeile_write: std_logic_vector (4 downto 0):= "00000";	-- 16 row counter for writing to memory
 signal Count_Char_write: std_logic_vector(2 downto 0) := "000";		-- char counter for writing to memory
 signal Count_colour: std_logic_vector (1 downto 0) := "00";			-- Counter for different colours
 signal W_R_Colour: std_logic_vector (3 downto 0) := "0100";			-- Signal for colour changing
 signal W_G_Colour: std_logic_vector (3 downto 0) := "0100";
 signal W_B_Colour: std_logic_vector (3 downto 0) := "0100";
 signal COUNT_Sek: integer range 0 to 100000000 := 0;				--Counts a second to start the writing cycle
-signal COUNT_Write_finished: integer range 0 to 1: = 0;				--Flag for a complete writing cycle after one second has passed
---constants for process Addr_finding
---constant OFFSET:  std_logic_vector (10 downto 0) := "01100000000"; 	--Offset wegen charmaps 768 (Sign "0" row 1 starts at address 768)
+signal COUNT_Write_cycle: std_logic := '0';				--Flag for a complete writing cycle after one second has passed
+
+
+
 -- constant for process Convert8to1
 constant vOFFSET: std_logic_vector (6 downto 0) := "0111111";		--64
 constant hOFFSET: std_logic_vector (8 downto 0) := "100100000";		--288
@@ -225,10 +226,10 @@ Addr_finding: process (W_CLK)
 			W_EN <= '1';
 			COUNT_Sek <= COUNT_Sek +1;
 			if COUNT_Sek = 100000000 then			--data gets only written when one second has passed
-				COUNT_Write_finished <= 1;
+				COUNT_Write_cycle <= '0';
 				COUNT_Sek <= 0;
 			end if;
-			if COUNT_Write_finished > 0 then
+			if COUNT_Write_cycle = '0' then
 				if DATA_Input /= x"12" then
 					if DATA_Input(Count_Convert) = '1' then
 						case Count_colour is
@@ -269,15 +270,14 @@ Addr_finding: process (W_CLK)
 						W_R <= W_R_Colour;
 						W_G <= W_G_Colour;
 						W_B <= W_B_Colour;
-						W_ADDR <= (vOFFSET * h_max + (("00000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");	--pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8) 
+						W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");	--pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8) 
 
 					elsif DATA_Input (Count_Convert) = '0' then
 						W_R <= "0000";
 						W_G <= "0000";
 						W_B <= "0000";
-						W_ADDR <= (vOFFSET * h_max + (("00000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");	--pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8)  
+						W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");	--pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8)  
 					end if;
-			
 			
 					-- Counter for each bit of Data_Input
 					if Count_Convert > 0 then 
@@ -285,18 +285,11 @@ Addr_finding: process (W_CLK)
 						Count_Convert2 <= Count_Convert2 + '1';
 					end if;
 					
-					
 					-- sync after writing operation complete
 					--if Count_Char_write = "111" and Count_Zeile_write = "1111" then
 					--		Sync <= '1';
 					--	else Sync <= '0';
 					--end if;
-					
-					-- Counter for each Sign
-					if Count_Char_write = "111" then
-						Count_Char_write <= "000";
-						Count_Zeile_write <= Count_Zeile_write +'1';
-					end if;
 					
 					-- Counter of DATA_Input for address operation
 					if (Count_Convert = 0) then 
@@ -305,14 +298,20 @@ Addr_finding: process (W_CLK)
 						Count_Char_write <= Count_Char_write +'1';
 					end if;
 					
+					if Count_Zeile_write= "10000" and Count_Char_write = "0000" then			-- full writing cycle finished, waits for the rest of the second before writing again
+						COUNT_Write_cycle <= '1';
+					end if;
+					
 					-- every line is written
-					if Count_Zeile_write = "1111" then
-						Count_Zeile_write <= "0000";
+					if Count_Zeile_write = "10000" then
+						Count_Zeile_write <= "00000";
+					end if;
+					-- end of character new line gets started
+					if Count_Char_write = "111" then
+						Count_Char_write <= "000";
+						Count_Zeile_write <= Count_Zeile_write +'1';
 					end if;
 
-					if Count_Char_write = "111" and Count_Zeile_write = "1111" then			-- full writing cycle finished, waits for the rest of the second before writing again
-						COUNT_Write_finished <= 0;
-					end if;
 				end if;
 			end if;
 		end if;
