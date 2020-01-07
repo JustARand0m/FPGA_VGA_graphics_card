@@ -45,49 +45,40 @@ component CONVERT
        DIGIT_1: out std_logic_vector(3 downto 0));
 end component;
 
-
 -------------------------------------signals-------------
 
 --signals for componet communication
 signal RST_GLOBAL: std_logic := '0';													--predefined signals from lcd controller
-signal CHAR0, CHAR1, CHAR2, CHAR3: std_logic_vector(7 downto 0);				--char in ascii from clockmachine
+signal CHAR0, CHAR1, CHAR2, CHAR3: std_logic_vector(7 downto 0);				        --char in ascii from clockmachine
 signal CHAR4, CHAR5, CHAR6, CHAR7: std_logic_vector(7 downto 0);
 signal SEK, MIN, HOUR: std_logic_vector(5 downto 0);
 signal MIN_1, MIN_0, SEK_1, SEK_0, HOUR_1, HOUR_0: std_logic_vector(3 downto 0);
 signal TICK_SEK: std_logic;
-signal Enable: std_logic := '0';										--enable for charmaps_ROM
-signal W_CLK2: std_logic:= '0';
+
 
 ---Signals for  process Addr_finding
 signal Count_Char: std_logic_vector (2 downto 0) := "000";			-- 8 signs in a row
-signal Count_Zeile : std_logic_vector (3 downto 0) := "0000"; 		-- 16 rows
-signal Count_Clk: std_logic_vector (2 downto 0) := "000";			-- 8 bit counter to get a slower Clock for address finding
+signal Count_Zeile : std_logic_vector (4 downto 0) := "00000"; 		-- 16 rows
+
 --Signals for process Convert8to1
-signal Count_Convert: integer range 0 to 7 := 7; 					-- 8 bit of Data_Input
+signal Count_Convert: integer range 0 to 8 := 8; 					-- 8 bit of Data_Input
 signal Count_Convert2: std_logic_vector (2 downto 0) := "000";		-- 8 bit of Data_Input but now in verctor for Address 	
 signal DATA_Input: std_logic_vector(7 downto 0);					-- 8-bit Data Input from charmaps
 signal ADDR: std_logic_vector (10 downto 0);  						-- 11-bit Address Output to charmaps
 signal Count_Zeile_write: std_logic_vector (4 downto 0):= "00000";	-- 16 row counter for writing to memory
-signal Count_Char_write: std_logic_vector(2 downto 0) := "000";		-- char counter for writing to memory
-signal Count_colour: std_logic_vector (1 downto 0) := "00";			-- Counter for different colours
-signal W_R_Colour: std_logic_vector (3 downto 0) := "0100";			-- Signal for colour changing
-signal W_G_Colour: std_logic_vector (3 downto 0) := "0100";
-signal W_B_Colour: std_logic_vector (3 downto 0) := "0100";
-signal COUNT_Sek: integer range 0 to 100000000 := 0;				--Counts a second to start the writing cycle
-signal COUNT_Write_cycle: std_logic := '0';				--Flag for a complete writing cycle after one second has passed
-
-signal STOP: std_logic := '0'; --stopper after one writing cycle
+signal Count_Char_write: std_logic_vector(3 downto 0) := "0000";		-- char counter for writing to memory
 
 -- constant for process Convert8to1
 constant vOFFSET: std_logic_vector (6 downto 0) := "0111111";		--64
 constant hOFFSET: std_logic_vector (8 downto 0) := "100100000";		--288
 constant h_max: std_logic_vector (9 downto 0):= "1010000000";		--640
 
+type Process_STATE is (Schreiben, Lesen);
 
+signal CURR_STATE: Process_STATE := Lesen;
 begin
 
 --------------------------port maps------------------------------
-
 	INST_CLOCK_MACHINE: CLOCK_MACHINE
 		port map(
 				CLK => SYS_CLK,
@@ -119,11 +110,11 @@ begin
 				DIGIT_1 => HOUR_1 );
 
   	INST_charmaps_ROM: charmaps_ROM
-		port map (i_clock => W_CLK2,
-				i_EN => Enable,
+		port map (i_clock => W_CLK,
+				i_EN => '1',
 				i_ADDR => ADDR,
 				o_DO => DATA_Input );
-  
+
   --convert BCD to ASCII
   CHAR0 <= x"3" & HOUR_1;
   CHAR1 <= x"3" & HOUR_0;
@@ -134,187 +125,169 @@ begin
   CHAR6 <= x"3" & SEK_1;
   CHAR7 <= x"3" & SEK_0;
 
-  --maybe helpful: https://stackoverflow.com/questions/33584342/how-to-add-two-different-sized-vectors-vhdl
--- -------------------process to find the correct address for charmaps ----------------------
+    main: process (W_CLK)
+    begin
+        if rising_edge (W_CLK) then
+        
+            case CURR_STATE is
+            -----------------------process to find the correct address for charmaps ----------------------
+                when Schreiben =>
+        
+                   if Count_Convert > 0 then
+                    
+                        if Data_Input(Count_Convert-1) =  '1' then
+                            W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");
+                            W_R <= "1111";
+                            W_G <= "0000";
+                            W_B <= "0000";
+                        elsif Data_Input(Count_Convert-1) =  '0' then
+                            W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");
+                            W_R <= "0000";
+                            W_G <= "0000";
+                            W_B <= "0000";
+                        end if;
+                           
+                        Count_Convert <= Count_Convert - 1;
+                        Count_Convert2 <= Count_Convert2 +"001";
+                    end if;
+                    
+                    if Count_Convert = 0 then
+                        Count_Zeile_write<= Count_Zeile_write + "00001";             --new line
+                        Count_Convert <= 8;
+                        Count_Convert2 <= "000";
+                        if Count_Zeile_write = "10000" then                          
+                            Count_Zeile_write <= "00000";
+                            Count_Char_write <= Count_Char_write + "0001";               --new character 
+                            CURR_STATE <= Lesen;
+                        end if;
+                    CURR_STATE <= Lesen;
+                    end if;
+                    
+                    if Count_Zeile_write = "10000" then
+                        Count_Zeile_write<= "00000";
+                        Count_Convert <= 8;
+                        Count_Convert2<= "000";
+                    end if;
+                    
+                    ----setting starting state for Lesen State
+                    if Count_Zeile = "10000" then
+                        Count_Zeile <= "00000";
+                        Count_Char <= Count_Char+"001";
+                    end if;
+    
+    -------------------------State to convert incoming data from charmaps to 12 bit output for Memory -------------------------
+    --			640
+    --		-------------------------
+    --		|			63			|
+    --		|	288 	|text|	288	|			erste Addresse: 64 * 640 + 288 = 41248
+    --		|			 			|			
+    --		|						|	480		zeile 288- 352
+    --		|			400			|			
+    --		|						|			vOFFSET = 64
+    --		|						|			hOFFSET = 288
+    --		-------------------------			h_max = 640
+    --
+                    
+                when Lesen =>
+                    --ADDR <= (CHAR0 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile);
+                    
+                    case Count_Char is                                                             --switch case for different Characters
+                        when "000" => 
+                            ADDR <= (CHAR0 (5 downto 0)*"10000")+ ("000000" & Count_Zeile); 	
+                            Count_Zeile <= Count_Zeile +'1';
+                            if Count_Zeile = "10000" then
+                                Count_Zeile<= "00000";                            
+                                Count_Char <= "001";
+                            end if;
 
+                            
+                        when "001" => 
+                            ADDR <= (CHAR1 (5 downto 0)*"10000")+ ("000000" & Count_Zeile);
+                            Count_Zeile <= Count_Zeile +'1';
+                            if Count_Zeile = "10000" then
+                                Count_Zeile<= "00000";
+                                Count_Char <= "010";
+                            end if;
 
+                            
+                        when "010" => 
+                            ADDR <= (CHAR2 (5 downto 0)*"10000")+ ("000000" & Count_Zeile);
+                            Count_Zeile <= Count_Zeile +'1';
+                            if Count_Zeile = "10000" then
+                                Count_Zeile<= "00000";
+                                Count_Char <= "011";
+                            end if;
 
-Addr_finding: process (W_CLK)
-	begin	
+                            
+                        when "011" => 
+                            ADDR <= (CHAR3 (5 downto 0)*"10000")+ ("000000" & Count_Zeile);
+                            Count_Zeile <= Count_Zeile +'1';
+                            if Count_Zeile = "10000" then
+                                Count_Zeile<= "00000";
+                                Count_Char <= "100";
+                            end if;
 
-		if rising_edge (W_CLK) then --W_CLK = '1' and W_CLK'event 
-			Count_Clk <= Count_Clk + 1;
-			Enable <= '1';
-		    ADDR <= "00000000000";
-			if COUNT_Write_cycle = '0'and STOP = '0' then
-			if Count_Clk = "111" then
-				W_CLK2 <= not W_CLK2;
-			end if;
-			if Count_Clk = "111" then
-				Count_Clk <= "000";
-				W_CLK2 <= not W_CLK2;
-				case Count_Char is
-					when "000" => 
-						ADDR <= (CHAR7 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile); 	-- ('0' & Variable) because of different sized vectors
-						Count_Char <= "001";
-						Enable <= '1';
-						
-					when "001" => 
-						--ADDR <= OFFSET+(CHAR1 (5 downto 0)*"10000")+ Count_Zeile;
-						ADDR <= (CHAR6 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile);
-						Count_Char <= "010";
-						Enable <= '1';
-						
-					when "010" => 
-						ADDR <= (CHAR5 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile);
-						Count_Char <= "011";
-						Enable <= '1';
-						
-					when "011" => 
-						ADDR <= (CHAR4 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile);
-						Count_Char <= "100";
-						Enable <= '1';
-						
-					when "100" => 
-						ADDR <= (CHAR3 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile);
-						Count_Char <= "101";
-						Enable <= '1';
-						
-					when "101" => 
-						ADDR <= (CHAR2 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile);
-						Count_Char <= "110";
-						Enable <= '1';
-						
-					when "110" => 
-						ADDR <= (CHAR1 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile);
-						Count_Char <= "111";
-						Enable <= '1';
-						
-					when "111" => 
-						ADDR <= (CHAR0 (5 downto 0)*"10000")+ ("0000000" & Count_Zeile);
-						--ADDR <= OFFSET+(SEK_1 *"10000")+ Count_Zeile;
-						Count_Char <= "000";
-						Enable <= '1';
-						Count_Zeile <= Count_Zeile +1;
-						if Count_Zeile = "1111" then
-							Count_Zeile <= "0000";
-						end if;
-					when others => ADDR <= "00000000000";
-				end case;
-			end if;	
-			end if;			
-		end if;
-	end process Addr_finding;
+                            
+                        when "100" => 
+                            ADDR <= (CHAR4 (5 downto 0)*"10000")+ ("000000" & Count_Zeile);
+                            Count_Zeile <= Count_Zeile +'1';
+                            if Count_Zeile = "10000" then
+                                Count_Zeile<= "00000";
+                                Count_Char <= "101";
+                            end if;
 
+                            
+                        when "101" => 
+                            ADDR <= (CHAR5 (5 downto 0)*"10000")+ ("000000" & Count_Zeile);
+                            Count_Zeile <= Count_Zeile +'1';
+                            if Count_Zeile = "10000" then
+                                Count_Zeile<= "00000";
+                                Count_Char <= "110";
+                            end if;
 
--------------------------process to convert incoming data from charmaps to 12 bit output for Memory -------------------------
---			640
---		-------------------------
---		|			63			|
---		|	288 	|text|	288	|			erste Addresse: 64 * 640 + 288 = 41248
---		|			 			|			
---		|						|	480		zeile 288- 352
---		|			400			|			
---		|						|			vOFFSET = 64
---		|						|			hOFFSET = 288
---		-------------------------			h_max = 640
---
+                            
+                        when "110" => 
+                            ADDR <= (CHAR6 (5 downto 0)*"10000")+ ("000000" & Count_Zeile);
+                            Count_Zeile <= Count_Zeile +'1';
+                            if Count_Zeile = "10000" then
+                                Count_Zeile<= "00000";
+                                Count_Char <= "111";
+                            end if;
 
+                            
+                        when "111" => 
+                            ADDR <= (CHAR7 (5 downto 0)*"10000")+ ("000000" & Count_Zeile);
+                            Count_Zeile <= Count_Zeile +'1';
+                            if Count_Zeile = "10000" then
+                                Count_Zeile<= "00000";
+                                Count_Char <= "000";
+                            end if;
 
-	Convert8to1: process (W_CLK)
-	begin	
-		if W_CLK = '1' and W_CLK'event then
-			W_R <= "0000";
-			W_G <= "0000";
-			W_B <= "0000";
-			W_ADDR <= "0000000000000000000";
-			--W_EN <= '1';                           -- needed for 2 buffer variant
-			COUNT_Sek <= COUNT_Sek +1;
-			if COUNT_Sek = 100000000 then			--data gets only written when one second has passed
-				COUNT_Write_cycle <= '0';
-				COUNT_Sek <= 0;
-			end if;
-			if STOP = '0' and COUNT_Write_cycle = '0' then
-				if DATA_Input /= x"12" then
-					if DATA_Input(Count_Convert) = '1' then
-						case Count_colour is
-							when "00" => 
-								W_B_Colour <= "0100";
-								W_G_Colour <= "0100";
-								W_R_Colour <= W_R_Colour + "0001";
-								if W_R_Colour = "1111" then
-									W_R_Colour <=  "0100";
-									Count_colour <= Count_colour + "01";
-								end if;
-							when "01" =>
-								W_B_Colour <= "0100";
-								W_R_Colour <= "0100";
-								W_G_Colour <= W_G_Colour + "0001";
-								if W_G_Colour = "1111" then
-									W_G_Colour <=  "0100";
-									Count_colour <= Count_colour + "01";
-								end if;
-							when "10" =>
-								W_R_Colour <= "0100";
-								W_G_Colour <= "0100";
-								W_B_Colour <= W_B_Colour + "0001";
-								if W_B_Colour = "1111" then
-									W_B_Colour <=  "0100";
-									Count_colour <= Count_colour + "01";
-								end if;
-								if Count_colour = "10" then 
-									Count_colour <= "00";
-								end if;
-							when others => 
-								W_G_Colour <= "1111";
-								if Count_colour = "11" then 
-									Count_colour <= "00";
-								end if;
-							end case;
-						W_R_Colour <= "1111";
-						W_R <= W_R_Colour;
-						W_G <= W_G_Colour;
-						W_B <= W_B_Colour;
-						W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");	--pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8) 
-
-					elsif DATA_Input (Count_Convert) = '0' then
-						W_R <= "0000";
-						W_G <= "0000";
-						W_B <= "0000";
-						W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");	--pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8)  
-					end if;
-			
-					-- Counter for each bit of Data_Input
-					if Count_Convert > 0 then 
-						Count_Convert <= Count_Convert - 1; 
-						Count_Convert2 <= Count_Convert2 + '1';
-					end if;
-					
-					-- Counter of DATA_Input for address operation
-					if (Count_Convert = 0) then 
-						Count_Convert <= 7;
-						Count_Convert2 <= "000";
-						Count_Char_write <= Count_Char_write +'1';
-					end if;
-				    
-				    -- full writing cycle finished, waits for the rest of the second before writing again
-					if Count_Zeile_write= "10000" and Count_Char_write = "0000" then			
-						COUNT_Write_cycle <= '1';
-					end if;
-					
-					-- every line is written
-					if Count_Zeile_write = "10000" then
-						Count_Zeile_write <= "00000";
-					end if;
-					-- end of character new line gets started
-					if Count_Char_write = "111" then
-						Count_Char_write <= "000";
-						Count_Zeile_write <= Count_Zeile_write +'1';
-					end if;
-
-				end if;
-			end if;
-		end if;
-
-	end process Convert8to1;
+                        when others =>
+                            Count_Char <= "000";
+                    end case;
+                  
+                    
+                    --setting starting state for Schreiben State
+                    if Count_Zeile_write = "10000" then
+                        Count_Zeile_write<= "00000";
+                        Count_Char_write <= Count_Char_write + "0001";  
+                        Count_Convert <= 8;
+                        Count_Convert2<= "000";
+                    end if;
+                    if Count_Char_write = "1000" then
+                        Count_Char_write <= "0000";
+                    end if;
+                    
+                    CURR_STATE <= Schreiben;
+                    
+                    
+                    when others => 
+                        CURR_STATE <=Lesen;
+                        
+            end case;
+                
+            
+       end if; 
+    end process;
 end BEHAV;
