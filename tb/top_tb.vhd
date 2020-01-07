@@ -32,6 +32,7 @@ begin
 		VS		  => TB_VS
 	);
 
+    -- generate clocks
 	TB_CLK_IN <= not TB_CLK_IN after 5 ns;
 
 end TESTBENCH;

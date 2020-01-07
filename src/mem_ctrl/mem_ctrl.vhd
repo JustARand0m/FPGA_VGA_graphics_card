@@ -2,18 +2,14 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all; 
-use ieee.std_logic_unsigned.all;
 
 entity MEM_CTRL is
-	port(-- OUTPUT
-         BLANK: in std_logic;
+	port(
+        -- OUTPUT
 	     R_R, R_G, R_B : out std_logic_vector(3 downto 0);
 	     R_ADDR: in std_logic_vector (18 downto 0);
 	     R_CLK: in std_logic;
 	     -- INPUT
-         SYNC: in std_logic;
-         W_EN: in std_logic;
 	     W_R, W_G, W_B : in std_logic_vector(3 downto 0);
 	     W_ADDR: in std_logic_vector (18 downto 0);
 	     W_CLK: in std_logic;
@@ -23,33 +19,25 @@ end MEM_CTRL;
 
 architecture BEHAV of MEM_CTRL is
 	-- type declarations
-        type BUFFER_TYPE is (R1, R2);
-
-        signal FRONT_BUFFER:    BUFFER_TYPE := R1;
-        signal BACK_BUFFER: BUFFER_TYPE := R2;
-
-        -- to prevent decloning of RAM component
-        attribute DONT_TOUCH : string;
-        attribute DONT_TOUCH of RAM1: label is "TRUE";
-        attribute DONT_TOUCH of RAM2: label is "TRUE";
+    -- to prevent decloning of RAM components
+    attribute DONT_TOUCH : string;
+    attribute DONT_TOUCH of RAM1: label is "TRUE";
  
- component DUAL_RAM is
-	port(-- OUTPUT
-	     D_O : out std_logic_vector(3 downto 0);
-	     R_ADDR: in std_logic_vector (18 downto 0);
-	     R_CLK: in std_logic;
-	     -- INPUT
-         W_EN: in std_logic;
-		 D_I: in std_logic_vector(3 downto 0);
-	     W_ADDR: in std_logic_vector (18 downto 0);
-	     W_CLK: in std_logic
-     );
-end component;
+    component DUAL_RAM is
+        port(-- OUTPUT
+            D_O : out std_logic_vector(2 downto 0);
+            R_ADDR: in std_logic_vector (18 downto 0);
+            R_CLK: in std_logic;
+            -- INPUT
+            D_I: in std_logic_vector(2 downto 0);
+            W_ADDR: in std_logic_vector (18 downto 0);
+            W_CLK: in std_logic
+        );
+    end component;
 	    
-		signal RAM_1_OUT, RAM_2_OUT: std_logic_vector(3 downto 0);
-		signal RAM_1_IN, RAM_2_IN: std_logic_vector(3 downto 0);
-		
-		signal N_SYNC: std_logic;
+    signal RAM_1_OUT: std_logic_vector(2 downto 0);
+    signal RAM_1_IN: std_logic_vector(2 downto 0);
+    
 begin
 	RAM1: DUAL_RAM port map (
 		-- OUTPUT
@@ -57,56 +45,46 @@ begin
 	    R_ADDR => R_ADDR,
 	    R_CLK => R_CLK,
 	    -- INPUT
-        W_EN => W_EN,
 		D_I => RAM_1_IN,
 	    W_ADDR => W_ADDR,
 	    W_CLK => W_CLK
 	);
-	
-	RAM2: DUAL_RAM port map (
-		-- OUTPUT
-		D_O => RAM_2_OUT,
-	    R_ADDR => R_ADDR,
-	    R_CLK => R_CLK,
-	    -- INPUT
-        W_EN => W_EN,
-		D_I => RAM_2_IN,
-	    W_ADDR => W_ADDR,
-	    W_CLK => W_CLK
-	);
 
-
-	READ_PROCESS: process(R_CLK, RAM_1_OUT, RAM_2_OUT)
+	READ_PROCESS: process(RAM_1_OUT)
 	begin
-		if(rising_edge(R_CLK)) then
-            case FRONT_BUFFER is
-                when R1 =>
-					  R_R <= RAM_1_OUT;
-                when R2 =>
-					  R_R <= RAM_2_OUT;
-            end case;
+		if(RAM_1_OUT(0) = '1') then
+			R_R <= "1111";
+		else
+			R_R <= "0000";
+		end if;
+		if(RAM_1_OUT(1) = '1') then
+			R_G <= "1111";
+		else
+			R_G <= "0000";
+		end if;
+		if(RAM_1_OUT(2) = '1') then
+			R_B <= "1111";
+		else
+			R_B <= "0000";
 		end if;
 	end process READ_PROCESS;
 	
-	WRITE_PROCESS: process(W_CLK, W_R)
+	WRITE_PROCESS: process(W_R)
 	begin
-        if(rising_edge(W_CLK)) then
-			case BACK_BUFFER is
-				when R1 =>
-					RAM_2_IN <= W_R;	
-				when R2 =>
-					RAM_1_IN <= W_R;	
-            end case;
-        end if;
+		if(W_R = "1111") then
+			RAM_1_IN(0) <= '1';
+		else
+			RAM_1_IN(0) <= '0';
+		end if;
+		if(W_G = "1111") then
+			RAM_1_IN(1) <= '1';
+		else
+			RAM_1_IN(1) <= '0';
+		end if;
+		if(W_B = "1111") then
+			RAM_1_IN(2) <= '1';
+		else
+			RAM_1_IN(2) <= '0';
+		end if;
     end process WRITE_PROCESS;
-	
-	N_SYNC <= ((not BLANK) and SYNC);
-	
-	BLANK_PROCESS: process(BLANK, N_SYNC, SYNC) 
-	begin
-			if(rising_edge(SYNC)) then
-                --     FRONT_BUFFER    <= BACK_BUFFER;
-                --     BACK_BUFFER	 <= FRONT_BUFFER;
-            end if;
-	end process BLANK_PROCESS;
 end BEHAV;
