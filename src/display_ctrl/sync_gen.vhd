@@ -100,7 +100,7 @@ begin
 	TIMER_V: COUNTER
 		generic map(INT_RANGE => INT_RANGE_TIMER_V)
 		port map(CLK => PIXEL_CLK, EN => '1', RESET => RESET_TIMER_V, Q => CURR_TIME_V);
-
+   
 	VERTICAL: process (PIXEL_CLK, RESET) 
 	begin
 		if(RESET = '1') then

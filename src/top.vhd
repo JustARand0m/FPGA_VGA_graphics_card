@@ -75,7 +75,7 @@ begin
         ADDR      => CONV_ADDR,
 		BLANK     => BLANK,
 		PIXEL_CLK => PIXEL_CLK,
-		RESET     => '0'
+		RESET     => '1'
 	);
 	
 	INST_BLANK_CHECK: BLANK_CHECK port map(
