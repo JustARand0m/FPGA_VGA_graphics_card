@@ -12,13 +12,13 @@ architecture TESTBENCH of INTEGRATION_TB is
     component MEM_CTRL is
         port(
             -- OUTPUT
-            BLANK: in std_logic;
+            --BLANK: in std_logic;
             R_R, R_G, R_B : out std_logic_vector(3 downto 0) := "0000";
             R_ADDR: in std_logic_vector (18 downto 0);
             R_CLK: in std_logic;
             -- INPUT
-            SYNC: in std_logic;
-            W_EN: in std_logic;
+            --SYNC: in std_logic;
+            --W_EN: in std_logic;
             W_R, W_G, W_B : in std_logic_vector(3 downto 0) := "0000";
             W_ADDR: in std_logic_vector (18 downto 0);
             W_CLK: in std_logic;
@@ -33,10 +33,10 @@ architecture TESTBENCH of INTEGRATION_TB is
          W_B: out std_logic_vector(3 downto 0) := (others => '0');
 	     W_ADDR: out std_logic_vector(18 downto 0);
 	     W_CLK: in std_logic;
-         W_EN: out std_logic;
+        -- W_EN: out std_logic;
 	     SYS_CLK: in std_logic;
-	     RESET: in std_logic;
-         SYNC: out std_logic := '0');
+	     RESET: in std_logic);
+        -- SYNC: out std_logic := '0';
     end component IMG_CREATE;
     
     component SYNC_GEN is
@@ -80,14 +80,14 @@ begin
     TB_R_ADDR <= std_logic_vector(to_unsigned(to_integer(unsigned(TB_C_V)) * 480 + to_integer(unsigned(TB_C_H)), 19));
 
 	INST_MEM_CTRL: MEM_CTRL port map(
-        BLANK  => TB_BLANK,
+        --BLANK  => TB_BLANK,
 		R_R    => TB_R_R,
 		R_G    => TB_R_G,
 		R_B    => TB_R_B,
         R_ADDR => TB_R_ADDR, 
         R_CLK  => TB_R_CLK,
-        SYNC   => TB_SYNC,
-        W_EN   => TB_W_EN,
+        --SYNC   => TB_SYNC,
+        --W_EN   => TB_W_EN,
 		W_R    => TB_W_R,
 		W_G    => TB_W_G,
 		W_B    => TB_W_B,
@@ -96,16 +96,16 @@ begin
 		RESET  => TB_RESET
 	);
 	
-	ISNT_IMG_CREATE: IMG_CREATE port map(
+	INST_IMG_CREATE: IMG_CREATE port map(
          W_R	=> TB_W_R,
          W_G	=> TB_W_G,
          W_B	=> TB_W_B,
 	     W_ADDR	=> TB_W_ADDR,
 	     W_CLK	=> TB_W_CLK,
-         W_EN	=> TB_W_EN,
+         --W_EN	=> TB_W_EN,
 	     SYS_CLK	=> TB_W_CLK,
-	     RESET	=> '0',
-         SYNC	=> TB_SYNC
+	     RESET	=> '0'
+        -- SYNC	=> TB_SYNC
     );
     
     INST_SYNC_GEN: SYNC_GEN port map(

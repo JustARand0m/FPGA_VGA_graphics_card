@@ -581,15 +581,18 @@ architecture Behavioral of charmaps_ROM is
     others => X"00"
     -- AUTOMATICALLY GENERATED... STOP
     );
-
+signal i_clock2: std_logic := '0';
 begin
+
   s_EN <= i_EN;
+  i_clock2 <= i_clock;
   p_rom : process (i_clock)
   begin
   o_DO <= x"12";
-    if rising_edge(i_clock) then
+    if rising_edge(i_clock) or falling_edge(i_clock2) then
       if s_EN = '1' then
         o_DO <= c_rom(to_integer(unsigned (i_ADDR)));
+		--o_DO<= x"FF";
       end if;
     end if;
   end process p_rom;

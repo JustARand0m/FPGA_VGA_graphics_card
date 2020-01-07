@@ -76,7 +76,7 @@ signal W_B_Colour: std_logic_vector (3 downto 0) := "0100";
 signal COUNT_Sek: integer range 0 to 100000000 := 0;				--Counts a second to start the writing cycle
 signal COUNT_Write_cycle: std_logic := '0';				--Flag for a complete writing cycle after one second has passed
 
-
+signal STOP: std_logic := '0'; --stopper after one writing cycle
 
 -- constant for process Convert8to1
 constant vOFFSET: std_logic_vector (6 downto 0) := "0111111";		--64
@@ -146,6 +146,10 @@ Addr_finding: process (W_CLK)
 			Count_Clk <= Count_Clk + 1;
 			Enable <= '1';
 		    ADDR <= "00000000000";
+			if COUNT_Write_cycle = '0'and STOP = '0' then
+			if Count_Clk = "111" then
+				W_CLK2 <= not W_CLK2;
+			end if;
 			if Count_Clk = "111" then
 				Count_Clk <= "000";
 				W_CLK2 <= not W_CLK2;
@@ -197,6 +201,7 @@ Addr_finding: process (W_CLK)
 						end if;
 					when others => ADDR <= "00000000000";
 				end case;
+			end if;	
 			end if;			
 		end if;
 	end process Addr_finding;
@@ -229,7 +234,7 @@ Addr_finding: process (W_CLK)
 				COUNT_Write_cycle <= '0';
 				COUNT_Sek <= 0;
 			end if;
-			if COUNT_Write_cycle = '0' then
+			if STOP = '0' and COUNT_Write_cycle = '0' then
 				if DATA_Input /= x"12" then
 					if DATA_Input(Count_Convert) = '1' then
 						case Count_colour is
@@ -285,20 +290,15 @@ Addr_finding: process (W_CLK)
 						Count_Convert2 <= Count_Convert2 + '1';
 					end if;
 					
-					-- sync after writing operation complete, needed for 2 buffer variant
-					--if Count_Char_write = "111" and Count_Zeile_write = "1111" then
-					--		Sync <= '1';
-					--	else Sync <= '0';
-					--end if;
-					
 					-- Counter of DATA_Input for address operation
 					if (Count_Convert = 0) then 
 						Count_Convert <= 7;
 						Count_Convert2 <= "000";
 						Count_Char_write <= Count_Char_write +'1';
 					end if;
-					
-					if Count_Zeile_write= "10000" and Count_Char_write = "0000" then			-- full writing cycle finished, waits for the rest of the second before writing again
+				    
+				    -- full writing cycle finished, waits for the rest of the second before writing again
+					if Count_Zeile_write= "10000" and Count_Char_write = "0000" then			
 						COUNT_Write_cycle <= '1';
 					end if;
 					
