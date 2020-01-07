@@ -104,9 +104,9 @@ begin
 		R_R    => PMOD_R,
 		R_G    => PMOD_G,
 		R_B    => PMOD_B,
-		W_R    => "0000",
-		W_G    => "0000",
-		W_B    => "1111",
+		W_R    => MEM_BLANK_R,
+		W_G    => MEM_BLANK_G,
+		W_B    => MEM_BLANK_B,
 		BLANK  => BLANK
 	);
 
