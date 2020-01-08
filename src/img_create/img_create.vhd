@@ -200,7 +200,7 @@ Addr_finding: process (W_CLK)
 	end process Addr_finding;
 
 
--------------------------process to convert incoming data from charmaps to 12 bit output for Memory -------------------------
+-------------------------State to convert incoming data from charmaps to 12 bit output for Memory -------------------------
 --			640
 --		-------------------------
 --		|			63			|

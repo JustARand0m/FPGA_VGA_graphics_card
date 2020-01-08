@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7050 64-bit) (preloaded format=pdflatex 2020.1.3)  4 JAN 2020 17:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7050 64-bit) (preloaded format=pdflatex 2020.1.8)  8 JAN 2020 16:46
 entering extended mode
 **./arbeit.tex
 (arbeit.tex
@@ -285,7 +285,7 @@ Class scrartcl Warning: Usage of package `fancyhdr' together
 (scrartcl)              `\addtokomafont' for the page style elements need
 (scrartcl)              explicite user intervention to work.
 (scrartcl)              Nevertheless, using requested
-(scrartcl)              package `fancyhdr' on input line 11.
+(scrartcl)              package `fancyhdr' on input line 10.
 
 (C:\Users\scm47071\AppData\Roaming\MiKTeX\2.9\tex/latex/fancyhdr\fancyhdr.sty
 Package: fancyhdr 2019/01/31 v3.10 Extensive control of page headers and footer
@@ -373,10 +373,10 @@ Package: xstring 2019/02/06 v1.83 String manipulations (CT)
 Package: subfig 2005/06/28 ver: 1.3 subfig package
 
 (C:\Users\scm47071\AppData\Roaming\MiKTeX\2.9\tex/latex/caption\caption.sty
-Package: caption 2020/01/01 v3.4c Customizing captions (AR)
+Package: caption 2020/01/03 v3.4h Customizing captions (AR)
 
 (C:\Users\scm47071\AppData\Roaming\MiKTeX\2.9\tex/latex/caption\caption3.sty
-Package: caption3 2019/12/31 v1.8f caption3 kernel (AR)
+Package: caption3 2020/01/03 v1.8h caption3 kernel (AR)
 Package caption3 Info: TeX engine: e-TeX on input line 61.
 \captionmargin=\dimen130
 \captionmargin@=\dimen131
@@ -463,7 +463,7 @@ Class scrartcl Warning: Usage of package `parskip' together
 (scrartcl)              I'd suggest to use option
 (scrartcl)              `parskip' with one of it's several values.
 (scrartcl)              Nevertheless, using requested
-(scrartcl)              package `parskip' on input line 24.
+(scrartcl)              package `parskip' on input line 23.
 
 (C:\Users\scm47071\AppData\Roaming\MiKTeX\2.9\tex/latex/parskip\parskip.sty
 Package: parskip 2019-01-16 v2.0c non-zero parskip adjustments
@@ -512,7 +512,7 @@ Class scrartcl Warning: Usage of package `tocloft' together
 (scrartcl)              `part', `chapter', `section', `subsection',
 (scrartcl)              `subsubsection', `paragraph' and `subparagraph'.
 (scrartcl)              Nevertheless, using requested
-(scrartcl)              package `tocloft' on input line 26.
+(scrartcl)              package `tocloft' on input line 25.
 
 (C:\Users\scm47071\AppData\Roaming\MiKTeX\2.9\tex/latex/tocloft\tocloft.sty
 Package: tocloft 2017/08/31 v2.3i parameterised ToC, etc., typesetting
@@ -844,47 +844,25 @@ been already used, duplicate ignored
                    \relax 
 l.58 
       [1] [1]
-<"I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"blockdiagramm.png, id=6
-0, 517.18219pt x 659.46375pt>
-File: "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"blockdiagramm.png 
-Graphic file (type png)
-<use "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"blockdiagramm.png>
-Package pdftex.def Info: "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/
-"blockdiagramm.png  used on input line 141.
-(pdftex.def)             Requested size: 227.56087pt x 290.16493pt.
- [2 <I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/blockdiagramm.png>]
-Overfull \hbox (50.81084pt too wide) in paragraph at lines 154--161
-[]\OT1/cmr/m/n/12 Dabei wird die ge-sam-te Ein-heit un-ter-halb von []MEM[]CTRL
-"als []IMG[]Creation"beschrieben.
- []
-
-
-Overfull \hbox (16.81009pt too wide) in paragraph at lines 154--161
-[]\OT1/cmr/m/n/12 char-maps[]ROM", so-wie den Pro-zes-sen []Ad-dr[]finding"und 
-[]Con-vert8to1". Der Grund-
- []
-
-<"I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"Aufbaucharmaps.png, id=
-68, 542.025pt x 498.36188pt>
-File: "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"Aufbaucharmaps.png
- Graphic file (type png)
-<use "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"Aufbaucharmaps.png>
-
-Package pdftex.def Info: "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/
-"Aufbaucharmaps.png  used on input line 164.
+<pics/blockdiagramm.png, id=62, 516.42938pt x 664.73344pt>
+File: pics/blockdiagramm.png Graphic file (type png)
+<use pics/blockdiagramm.png>
+Package pdftex.def Info: pics/blockdiagramm.png  used on input line 144.
+(pdftex.def)             Requested size: 232.39107pt x 299.12729pt.
+ [2 <./pics/blockdiagramm.png>]
+<pics/Aufbaucharmaps.png, id=71, 542.025pt x 498.36188pt>
+File: pics/Aufbaucharmaps.png Graphic file (type png)
+<use pics/Aufbaucharmaps.png>
+Package pdftex.def Info: pics/Aufbaucharmaps.png  used on input line 172.
 (pdftex.def)             Requested size: 216.80615pt x 199.34122pt.
-<"I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"AufbauBildschirmspeiche
-r.png, id=71, 1024.57782pt x 551.05875pt>
-File: "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"AufbauBildschirmsp
-eicher.png Graphic file (type png)
-<use "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/"AufbauBildschirmspe
-icher.png>
-Package pdftex.def Info: "I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/
-"AufbauBildschirmspeicher.png  used on input line 188.
+<pics/AufbauBildschirmspeicher.png, id=74, 1024.57782pt x 551.05875pt>
+File: pics/AufbauBildschirmspeicher.png Graphic file (type png)
+<use pics/AufbauBildschirmspeicher.png>
+Package pdftex.def Info: pics/AufbauBildschirmspeicher.png  used on input line 
+202.
 (pdftex.def)             Requested size: 389.34361pt x 209.4045pt.
-[3 <I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/Aufbaucharmaps.png>]
-[4 <I:/oth/6Semester/FPGADOKU/VorlageProjektbericht/pics/AufbauBildschirmspeich
-er.png>] [5] [6] [7] [8]
+ [3] [4 <./pics/Aufbaucharmaps.png>] [5 <./pics/AufbauBildschirmspeicher.png>] 
+[6] [7] [8] [9]
 
 Class scrartcl Warning: You are using `\begin{appendix}...\end{appendix}'.
 (scrartcl)              You should note, that `\appendix' is a mostly globally
@@ -897,13 +875,13 @@ Class scrartcl Warning: You are using `\begin{appendix}...\end{appendix}'.
 (scrartcl)              inconsistent.
 (scrartcl)              Because of this, you should remove `\end{appendix}'
 (scrartcl)              and replace `\begin{appendix}' by command
-(scrartcl)              `\appendix' on input line 380.
+(scrartcl)              `\appendix' on input line 426.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.I}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.407 
+l.453 
        [1] (arbeit.lof)
 \tf@lof=\write5
 \openout5 = `arbeit.lof'.
@@ -914,38 +892,39 @@ LaTeX Warning: Empty `thebibliography' environment or \BreakBibliography
                before end of `thebibliography' environment on input line 3.
 
 ) [3]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 450.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 496.
 
  ("C:\Program Files\MiKTeX 2.9\tex/latex/base\omscmr.fd"
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 450.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 496.
  [4]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 455.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 455.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 510.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 510.
  (arbeit.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 455.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 455.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 510.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 510.
 Package rerunfilecheck Info: File `arbeit.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 14817 strings out of 492895
- 240972 string characters out of 3133471
- 660533 words of memory out of 3000000
- 18437 multiletter control sequences out of 15000+200000
- 10685 words of font info for 40 fonts, out of 3000000 for 9000
+ 14833 strings out of 492895
+ 240763 string characters out of 3133471
+ 661882 words of memory out of 3000000
+ 18451 multiletter control sequences out of 15000+200000
+ 11032 words of font info for 41 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  70i,14n,120p,10123b,506s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Pr
 ogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Fi
 les/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTe
 X 2.9/fonts/type1/public/amsfonts/cm/cmssbx10.pfb><C:/Program Files/MiKTeX 2.9/
-fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on arbeit.pdf (14 pages, 223173 bytes).
+fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/ty
+pe1/public/amsfonts/cm/cmti12.pfb>
+Output written on arbeit.pdf (15 pages, 255431 bytes).
 PDF statistics:
- 211 PDF objects out of 1000 (max. 8388607)
- 38 named destinations out of 1000 (max. 500000)
- 173 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 224 PDF objects out of 1000 (max. 8388607)
+ 40 named destinations out of 1000 (max. 500000)
+ 181 words of extra memory for PDF output out of 10000 (max. 10000000)
 

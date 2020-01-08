@@ -5,13 +5,14 @@
 \contentsline {subsection}{\numberline {3.1}\IeC {\"U}berblick}{2}{subsection.3.1}% 
 \contentsline {subsection}{\numberline {3.2}L\IeC {\"o}sungsans\IeC {\"a}tze}{2}{subsection.3.2}% 
 \contentsline {subsection}{\numberline {3.3}Umgesetzte L\IeC {\"o}sung}{3}{subsection.3.3}% 
-\contentsline {subsection}{\numberline {3.4}M\IeC {\"o}gliche Erweiterungen}{5}{subsection.3.4}% 
-\contentsline {subsection}{\numberline {3.5}Zusammenfassung}{5}{subsection.3.5}% 
-\contentsline {section}{\numberline {4}Speicherverwaltung}{6}{section.4}% 
-\contentsline {subsection}{\numberline {4.1}\IeC {\"U}berblick}{6}{subsection.4.1}% 
-\contentsline {section}{\numberline {5}Timing und Blank\_Check}{7}{section.5}% 
-\contentsline {subsection}{\numberline {5.1}\IeC {\"U}berblick}{7}{subsection.5.1}% 
-\contentsline {section}{\numberline {6}Fazit und Ausblick}{8}{section.6}% 
+\contentsline {subsection}{\numberline {3.4}Probleme w\IeC {\"a}hrend der Umsetzung}{5}{subsection.3.4}% 
+\contentsline {subsection}{\numberline {3.5}M\IeC {\"o}gliche Erweiterungen}{5}{subsection.3.5}% 
+\contentsline {subsection}{\numberline {3.6}Zusammenfassung}{6}{subsection.3.6}% 
+\contentsline {section}{\numberline {4}Speicherverwaltung}{7}{section.4}% 
+\contentsline {subsection}{\numberline {4.1}\IeC {\"U}berblick}{7}{subsection.4.1}% 
+\contentsline {section}{\numberline {5}Timing und Blank\_Check}{8}{section.5}% 
+\contentsline {subsection}{\numberline {5.1}\IeC {\"U}berblick}{8}{subsection.5.1}% 
+\contentsline {section}{\numberline {6}Fazit}{9}{section.6}% 
 \contentsline {section}{Anhang}{I}{section*.6}% 
 \vspace {-0.5em}
 \contentsline {section}{\numberline {A}Abk\IeC {\"u}rzungsverzeichnis}{I}{appendix.A}% 

@@ -92,12 +92,12 @@ afterskip=.4\baselineskip
 % ----------------------------------------------------------------------------------
 \section{Einleitung}
 %Diese Latexvorlage basiert auf der Vorlage von Prof. Dr. Carsten Kern. Sie können dieses \LaTeX-Template als Vorlage für Ihre Abschlussarbeit (\ac{BA}, \ac{MA}) nutzen und auf Wunsch natürlich auch selbstständig erweitern. Auf den folgenden Seiten finden Sie einige Hinweise zu \LaTeX.  
-Die Grundaufgabenstellugn des eigenen Projektes war die Ausgabe einer Digitaluhr auf einem Bildschirm. Dazu sollte auf einem FPGA eine kleine 
-Grafikkarte erstellt werde. Dazu wurde uns der Arty-7 zur Verfügung gestellt. Die Daten sollten nach den Berechnungen über eine VGA-Schnittstelle 
-an eine Monitor geschickt werden. 
-Die Auflösung sollte dabei 640x480 bei 60 Hz betragen. Dadurch wurden diverse Zeiten vorgegeben die im Kapitel Timing genauer betrachtet werden.
+Die Grundaufgabenstellung des eigenen Projektes war die Ausgabe einer Digitaluhr auf einem Bildschirm. Dazu sollte auf einem FPGA eine kleine 
+Grafikkarte erstellt werden. Dazu wurde stand ein Arty-7 zur Verfügung. Die Daten sollten dabei nach den Berechnungen über eine VGA-Schnittstelle 
+an eine Monitor geschickt werden, welcher sie in der Auflösung  640x480 bei 60 Hz ausgeben sollte. Dadurch wurden diverse Zeiten vorgegeben die im Kapitel Timing genauer betrachtet werden.
 Diese sind für die richtige Synchonisation zwischen Bildschirm und FPGA verantwortlich, denn beim Schreibvorgang wird bei der ersten Pixelreihe links 
-oben begonnen und nach einer gewissen Zeit mit der nächsten fortgesetzt. Wird dabei die letzte Reihe erreicht, springt der "`Schreibkopf"\, wieder zur 
+oben begonnen und nach einer gewissen Zeit mit der nächsten fortgesetzt. Vor Beginn und nach dem Ende des Schreibens einer Zeile muss dabei eine gewisse Zeit gewartet werden. 
+Wird dabei die letzte Reihe erreicht, springt der "`Schreibkopf"\, wieder zur 
 ersten Reihe, wobei der Schreibvorgang nach einer festgelegten Zeitspanne mit einem neuen Bild begonnen wird.
 
 \section {Lösungsansätze}
@@ -115,12 +115,14 @@ Dabei beginnt der Ablauf dieser Grafikkarte in der Bilderstellungskomponente "`I
 durch "`charmaps\_ROM"\, in Bitmaps verändert werden. Diese werden danach in einzelne Bits aufgespalten und mit einer Farbkombination verknüpft 
 und in den Speicher geschrieben. 
 \newline 
-Im Speicher...
+Im Speicher werden die ankommenden Daten an der richtigen Adresse abgelegt und dann der Ausgabe zur Verfügung gestellt. Dabei wird aus den beiden 
+Seitenzahlen der Pixel des Bildschirms auch noch die aktuelle Leseadresse bestimmt.
 \newline
-In SYNC
-\newline
-Zusatzlich benötigt die Schnittstelle dabei noch die Komponente "`Blank\_Check". Diese verhindert dass außerhalb der fest vorgegebenen Schreibgrenzen
-Daten an den Bildschirm gesendet werden. Dazu überprüft die Komponente die Zeitintervalle und setzt wenn nötig den Ausgang auf "`0".
+Die Komponente "`Sync" ist dabei für die Synchronisierung zwischen Bildschirm und Grafikkarte zuständig. Diese stellt dabei dem Speicher auch die 
+Zähler zur Pixeladresse zur Verfügung.
+Zusatzlich benötigt die Schnittstelle zum Monitor dabei noch die Komponente "`Blank\_Check". Diese verhindert dass außerhalb der fest vorgegebenen 
+Schreibgrenzen Daten an den Bildschirm gesendet werden. Dazu überprüft die Komponente die Zeitintervalle und setzt wenn nötig den Ausgang 
+auf "`0".
 
 
 \pagebreak
@@ -128,75 +130,99 @@ Daten an den Bildschirm gesendet werden. Dazu überprüft die Komponente die Zei
 % Kapitel 1: Bilderstellung Michael Schmidt
 % ----------------------------------------------------------------------------------
 \section{Bilderstellung}
+\textit{von Michael Schmidt}
 \subsection{Überblick}
 Der grundsätzliche Code für eine Uhr wurde zur Verfügung gestellt. Lediglich die Umformung in passende Zeichen, die in den Speicher geschrieben 
 werden, wurde implementiert. Dabei werden die Zeichen in ASCII-Code von der Komponente "`CLOCK\_MACHINE" \,zur Verfügung gestellt. Diese werden 
 dann basierend auf Zeichen und Zeile in eine Adresse umgewandelt, die an die Komponente "`charmaps\_ROM"\, übergeben werden. Dort wird dann das 
-richtige Byte dazu ausgewählt. Dieses Byte zeigt durch "`1" \,an das dieser Pixel gesetzt wird und bei "`0" \,nicht. Dieses Byte wird dann in einzelne
-Bits/Pixel zerlegt und mit der Farbauswahl und einer Adresse, ebenfalls basierend auf Zeichen und Zeile an den Speicher übergeben. 
+richtige Byte dazu ausgewählt. Dieses Byte zeigt durch "`1" \,an das dieser Pixel gesetzt wird und bei "`0" \,nicht. Dieses Byte wird dann in 
+einzelne Bits/Pixel zerlegt und mit der Farbauswahl und einer Adresse, ebenfalls basierend auf Zeichen und Zeile an den Speicher übergeben. 
 
 \subsection{Lösungsansätze}
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale = 0.44]{blockdiagramm}
+	\includegraphics[scale = 0.45]{pics/blockdiagramm}
 	\caption{Schematische Darstellungder Komponente IMG\_CREATE}
 	\label{blockdiagramm}
 \end{figure}
 Durch die Vorgabe der anderen Komponenten war bereits ein gewisser Weg vorgegeben. Einige Unterschiede könnten lediglich in der Programmierung 
-entstehen. Die Trennung in zwei Prozesse ist hierbei sinnvoll da beide von unterschiedlichen Takten beeinflusst werden. Außerdem haben beide einen 
-anderen Kontext: "`Addr\_finding" \,das Ansprechen der Komponenten "`charmaps\_ROM" \,und "`Convert8to1"\, das Weiterleiten der Farben mit der 
-richtigen Adresse an den Speichercontroller.
-
+entstehen. Eine Trennung in zwei Prozesse ist hierbei möglich, da zwei grundsätzliche Arbeitsschritte zu erledigen sind. Dabei würde der erste 
+Prozess das Ansprechen der Komponenten "`charmaps\_ROM" \, 
+übernehmen und der zweite das Weiterleiten der Farben mit der 
+richtigen Adresse an den Speichercontroller. Allerdings ergibt sich dadurch die Problematik der Synchronisierung zwischen beiden Prozessen. Dies 
+könnte eventuell noch über einen dritten Prozess, 
+der beide synchonisiert gelöst werden. 
+Eine weitere Möglichkeit ist eine State-Machine, bei der zwischen zwei Zuständen hin und her gewechselt wird. Diese Zustände würden dabei die 
+jeweiligen Aufgaben der Prozesse übernehmen und nach Abschluss dieser in den anderen wechseln.
 
 \subsection{Umgesetzte Lösung}
 Der grundsätzliche Aufbau wird in der folgenden Grafik \ref{blockdiagramm} anhand eines Blockdiagramms dargestellt.
 
-Dabei wird die gesamte Einheit unterhalb von "`MEM\_CTRL" \,als "`IMG\_Creation" \,beschrieben. Diese besteht aus den Komponenten \,
+Dabei wird die gesamte Einheit unterhalb von "`MEM\_CTRL" \,als "`IMG\_Creation" \,\newline beschrieben. Diese besteht aus den Komponenten \,
 "`CLOCK\_MACHINE"\,,
-"`CONVERT" \,und "`charmaps\_ROM",\, sowie den Prozessen "`Addr\_finding" \,und "`Convert8to1". Der Grundaufbau der Uhr beginnt dabei in der 
-"`CLOCK\_MACHINE", welche die Zahlen der Uhr festlegt. Diese werden dann von der Komponente "`CONVERT" \,in ASCII umgewandelt. Mit diesen 
-Ausgangswerten beginnt der Prozess "`Addr\_finding". Dort werden die letzten sechs Zeichen der Bitfolge mit 16 multipliziert. Anschließend 
-wird noch ein Zähler für die aktuelle Zeile hinzuaddiert. Dabei wird immer zuerst die erste Zeile des ersten Zeichens, dann die erste 
-Zeile des zweiten Zeichens bearbeitet, da dies dem Lesevorgang aus dem Speicher heraus entspricht.
+"`CONVERT" \,und "`charmaps\_ROM",\, sowie einem Prozessmit zwei Zuständen in denen . Der Grundaufbau der Uhr beginnt dabei in der 
+"`CLOCK\_MACHINE", welche die Zahlen der Uhr festlegt. Diese werden dann von der Komponente "`CONVERT" \, in zwei getrennte Ziffern umgerechnet 
+und anschließend in ASCII umgewandelt. Mit diesen 
+Ausgangswerten beginnt der Prozess zu rechnen. Die State-Machine beginnt dabei im Zustand "`Lesen"\,. Dort werden die letzten sechs Zeichen der 
+Bitfolge mit 16 multipliziert. Anschließend 
+wird noch ein Zähler für die aktuelle Zeile hinzuaddiert. Dadurch entsteht die richtige Adresse für "`charmaps\_ROM"\,. 
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale = 0.4]{Aufbaucharmaps}
-	\caption{Charmap Aufteilung und Adresse}
+	\includegraphics[scale = 0.4]{pics/Aufbaucharmaps}
+	\caption{Charmap-Aufteilung und Adresse}
 	\label{charmaps}
 \end{figure} 
  
-Dies ist dadurch möglich, da die letzten sechs Bit des ASCII-Codes genau der Adresse der Charmaps entsprechen. Die genaue Charmapaufteilung ist in 
-der Grafik \ref{charmaps} zu sehen. Jedes Kästchen/Zeichen besteht dabei aus 16 Zeilen mit einer Länge von einem Byte. Nach einem kompletten 
-Durchlauf der Zeichenfolge werden die Zähler zurückgesetzt. Da jedoch die Konvertierung im Prozess "`Convert8to1" \,im Takt der W\_CLk erfolgt muss 
-Hier der Takt acht mal langsamer sein. Dies wurde über einen weiteren Zähler realisiert. Dieser Zähler gibt außerdem den Takt für die Komponente 
-"`charmaps\_ROM" \,vor, damit dem Process "`Convert8to1" \,genügend Zeit bleibt das ankommende Byte auch zu verarbeiten. Um die durch die zeitlichen 
-Diskrepanzen entstehenden Standardwerte der Komponente "`charmaps\_ROM"\, auszugleichen wird ein Standardwert gewählt der in keiner Bytekombination 
-vorkommt, in diesem Fall "`12". Diese wird dann im Prozess "`Convert8to1" \,ausgefiltert.
-Dort wird dann das ankommende Byte von der Stelle 7 bis zur Stelle 0 durchgegangen und jeweils im normalen Takt eine 
-Farbkombination in den Speicher geschrieben. Die Adresse wird dabei mit Konstanten verrechnet, die die Abstände zum Bildschirmrand festlegen, siehe 
+Dies ist dadurch möglich, 
+da die letzten sechs Bit des ASCII-Codes genau der Adresse der 
+Charmaps entsprechen. Die genaue Charmapaufteilung ist in 
+der Grafik \ref{charmaps} zu sehen. Jedes Kästchen/Zeichen besteht dabei aus 16 Zeilen mit einer Länge von einem Byte. Dabei wird immer zuerst 
+die erste Zeile des ersten Zeichens, dann die zweite 
+Zeile des ersten Zeichens bearbeitet. Somit wird erst ein vollständiges Zeichen geschrieben bevor ein zweites angefangen wird. Nach einem 
+kompletten 
+Durchlauf des ersten Zeichen werden alle Zähler, bis auf den der anzeigt bei welcher Ziffer bzw. Doppelpunkt man sich befindet, zurückgesetzt. 
+
+ 
+Nachdem eine Zeile eines Zeichens gelesen wurde, wechselt der Zustand zu "`Schreiben"\,, wo, nachdem das Byte von "`charmaps\_ROM"\, ausgewählt 
+wurde, dieses in seine einzelnen Bits zerlegt werden soll. 
+Dort wird dann das ankommende Byte von der Stelle 7 bis zur Stelle 0 durchgegangen und jeweils eine 
+Farbkombination in den Speicher geschrieben. Die Adresse wird dabei mit Konstanten verrechnet, die die Abstände zum Bildschirmrand festlegen, 
+siehe 
 \ref{bildschirm}. Die Adresse wird dabei nach folgender Gleichung berechnet: 
 {\centering
 \newline
-$\text{Pixeladresse} = (\text{Vertikaler Abstand} * 
-\text{horizontaler Maximalwert}) + (\text{Zähler Zeilen} * \text{horizontaler Maximalwert}) + \text{ Horizontaler Abstand } + 
-\text{Bit innerhalb des Zeichens}\newline (\text{Zeichen} * 8)$
+$\text{Pixeladresse} =\newline (\text{Vertikaler Abstand} * 
+\text{horizontaler Maximalwert}) +\newline (\text{Zähler Zeilen} * \text{horizontaler Maximalwert}) + \newline\text{ Horizontaler Abstand } + 
+\text{Bit innerhalb des Zeichens} + (\text{Zeichen} * 8)$
 \newline 
 }
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale = 0.38]{AufbauBildschirmspeicher}
+	\includegraphics[scale = 0.38]{pics/AufbauBildschirmspeicher}
 	\caption{Aufteilung Bildschirm bzw. Adressraum}
 	\label{bildschirm}
 \end{figure} 
 Dadurch wird die richtige Speicherzelle mit den 12 Bit des Farbcodes gefüllt, vier Bit für jede Farbe. 
 Dieser reicht daher pro Farbe von 0 bis 255. Beim Schreibvorgang wird somit nur der Bereich beschrieben in dem die Uhr auch zu sehen ist. 
-Daher werden auch nur $16 \text{ Zeilen } * 8 \text{ Zeichen } * 8 \text{ Byte } = 1024 \text{ Speicherzellen }$ direkt angesprochen, wie in \ref{bildschirm} zu sehen ist.
-%vOFFSET+("00000" & Count_Zeile_write)* h_max)+ hOFFSET+ Count_Convert2+Count_Char_write*"8"
-%pixeladdr = vOFFSET+Count_Zeile*(h_max)+hOFFSET+Count_Convert(Count_Char*8)  
-Dabei wurde auch noch eine Funktion implementiert die die Farben verändert. So wird immer eine Farbe von dem Wert "`0100"\, bis zum Maximalwert erhöht. 
-Der Grundwert muss dabei ausreichend hoch angesetzt werden, damit dennoch eine Farbe zu sehen ist. 
+Daher werden auch nur $16 \text{ Zeilen } * 8 \text{ Zeichen } * 8 \text{ Byte } = 1024 \text{ Speicherzellen }$ direkt angesprochen, wie in 
+\ref{bildschirm} zu sehen ist.
+Des weiteren wurde ein Ansatz für eine Funktion programmiert, bei der die Farbgebung kontinuirlich wechselt. Dabei ist darauf zu achten, dass 
+immer 
+mindestens ein gewisser Wert übergeben wird, da ansonsten der Fall auftreten kann, dass diverse Pixel nicht angezeigt werden. Diese Funktion 
+konnte allerdings nicht mehr 
+ausreichend getestet werden, da bei dem momentane Stand die Farbgebung nur aufgrund eines einzelnen Bits erfolgt. 
 
+
+\subsection {Probleme während der Umsetzung}
+
+Zuerst entschied ich mich für die Umsetzung mit zwei Prozessen die sich selbst synchronisieren. Nachdem allerdings keine robuste Anwendung 
+der Implementierung möglich war, änderte ich mein Vorgehen in das einer State-Machine.
+Die meisten Probleme verursachte dabei die fehlerhafte Synchronierung zwischen beiden Prozessen. Nachdem das über Standardwerte, die zwar 
+übergeben, aber anschließend herausgefiltert werden einigermaßen gelöst war, trat der Fall auf,
+dass die Zeichen kurz nach dem ersten Schreibvorgang bereits wieder mit "`0"\, überschrieben wurden. Dadurch kam es auch zu keiner Ausgabe 
+auf dem Bildschirm, was eine aufwändige Fehlersuche mittels Modelsim notwendig machte. Auch die korrekte Schreibadresse bereitete Probleme, 
+da bereits ein verschobener Zähler dazu führte, dass das Bild wanderte bzw. sich selbst überschrieb.
 
 
 \subsection{Mögliche Erweiterungen}
@@ -207,19 +233,31 @@ Zeichen aus "`charmaps\_ROM" \,verwendet werden.\newline
 Eine weitere Erweiterung wäre die Ausgabe der Uhr in einem bewegten Modus, wie ältere Bildschirmschoner. Dazu müsste ein weitere Zähler eingefügt 
 werden, der nach einem vollständigen Schreibvorgang weiter zählt und dabei die Adresse verändert. Dies bewirkt allerdings nur eine Verschiebung in 
 horizontaler Richtung. Zusätzlich könnte auch noch ein zweiter Zähler eingeführt werden, der in vertikaler Richtung weiter zählt, nach dem 
-Modus: \newline $\text{Vertikaler Zähler} * \text{horizontaler Maximalwert} = \text{Vertikale Verschiebung}$\newline Dadurch würde dann eine diagonale Verschiebung erfolgen. Außerdem sollten noch Grenzen festgelegt 
-werden, die verhindern, dass die Uhr nicht mehr zu sehen ist, da sie in einem Bereich angezeigt wird, der duch die Komponente "`Blank\_Check"\, nicht an 
+Modus: \newline $\text{Vertikaler Zähler} * \text{horizontaler Maximalwert} = \text{Vertikale Verschiebung}$\newline Dadurch würde dann eine 
+diagonale Verschiebung erfolgen. Außerdem sollten noch Grenzen festgelegt 
+werden, die verhindern, dass die Uhr nicht mehr zu sehen ist, da sie in einem Bereich angezeigt wird, der duch die Komponente "`Blank\_Check"\, 
+nicht an 
 den Bildschirm gesendet wird. Da die Grenzen der Uhr fest vorgegeben sind muss dazu lediglich eine Abfrage erfolgen.
 Bei einer sich bewegenden Uhr müssen allerdings alle nicht beschriebenen Pixel wieder auf "`0" \,gesetzt werden, da ansonsten die Überbleibsel des 
-vorherigen Schreibvorgangs noch zu sehen sind.
+vorherigen Schreibvorgangs noch zu sehen sind.\newline
+Auch eine Erweiterung auf eine andere Auflösung wäre möglich. Dabei müssten der Spericher vergrößert, die Werte für Sync und die Adressberechnung 
+für den Speicher angepasst werden. Die Uhr würde dabei jedoch verkleinert dargestellt werden, da momentan nur ein Pixel geschrieben wird. Außerdem 
+könnten noch andere Zeichen ausgegeben werden. Im Falle von Zeichen müsste jedoch die Adressefunktion angepasst werden um auch mit den ASCII-Werten 
+der Buchstaben zurechtzukommen.
 
 \subsection{Zusammenfassung}
+Durch den späten Umschwung auf die State-Machine wurde viel Zeit in eine von Grund auf andere Art der Implementierung investiert. 
+Diese Zeit fehlt dann später für die möglichen Erweiterungen des bestehenden und funktionsfähigen Programms. Allerdings wurden bei der 
+Fehlersuche immer neue Kenntnisse und Durchhaltevermögen vermittelt. Außerdem bewegte sich die Verfahrensweise auf einem sehr niedrigen Niveau, 
+wodurch die Fehlersuche entsprechend kompliziert war.
+
 
 \pagebreak
 % ----------------------------------------------------------------------------------
 % Kapitel 2: Speicherverwaltung Michael Braun
 % ----------------------------------------------------------------------------------
 \section{Speicherverwaltung}
+\textit{Von Michael Braun}
 \subsection{Überblick}
 
 
@@ -228,6 +266,7 @@ vorherigen Schreibvorgangs noch zu sehen sind.
 % Kapitel 3: Timing und Blank\_Check Korbinian Federholzner
 % ----------------------------------------------------------------------------------
 \section{Timing und Blank\_Check}
+\textit{Von Korbinian Federholzner}
 \subsection{Überblick}
 
 \subsection{}
@@ -237,9 +276,16 @@ vorherigen Schreibvorgangs noch zu sehen sind.
 % ----------------------------------------------------------------------------------
 % Kapitel: Fazit und Ausblick
 % ----------------------------------------------------------------------------------
-\section{Fazit und Ausblick}
+\section{Fazit}
 
-
+Zusammengefasst lässt sich sagen, dass die Programmierung auf einem 
+FPGA deutlich aufwändiger ist als auf herkömmlichen Mikrocontrollern. Außerdem ist eine komplett andere Einstellung bezüglich der 
+Komponenten und deren Zusammenspiel notwendig. Das Abstraktionsniveau ist bei VHDL auch deutlich höher als bei Hochsprachen. 
+Zusätzlich ist immer auch noch eine zeitliche Komponente entscheidend, da alles nur im Zyklus der Clock abläuft und dann bereits 
+die richtigen Werte anliegen müssen, um eine korrekte Verarbeitung zu ermöglichen. Außerdem führten bereits kleiner Änderungen im 
+Code zu einem komplett anderen Verhalten innerhalb der Simulation und der Implementierung. Auch die Fehlersuche mittels einer Simulation 
+und ohne einen Debugger war wesentlich komplizierter als bei anderen Projekten. Allerdings wurden dabei auch wichtige Kenntnisse 
+vermittelt und einem ein umfangreicher Überblick über die Arbeitsweise eines FPGA verschafft.
 
 \pagebreak
 
@@ -447,8 +493,17 @@ vorherigen Schreibvorgangs noch zu sehen sind.
 % ----------------------------------------------------------------------------------------------------------
 \addsec{Inhalt des Datenträgers}
 \begin{itemize}
-	\item $\ldots$
-	\item $\ldots$
+	\item $Bericht$
+	\begin {itemize}
+		\item $Bericht$
+		\item $Vortragsfolien$
+		\item $Stundennachweise$
+	\end {itemize}
+	\item $Quellcode$
+	\begin{itemize}
+		\item $Source Files$
+		\item $Extras$
+	\end {itemize}
 \end{itemize}
 \pagebreak
 
