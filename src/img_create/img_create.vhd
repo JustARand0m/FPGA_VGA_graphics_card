@@ -13,7 +13,10 @@ entity IMG_CREATE is
 		 
 	     W_CLK: in std_logic;
 	     SYS_CLK: in std_logic;
-	     RESET: in std_logic);
+	     RESET: in std_logic;
+	     SET_SEK: in std_logic;
+         SET_MIN: in std_logic;
+         SET_HOUR: in std_logic);
 		-- W_EN: out std_logic;							--only needed for 2 buffer variant
 end IMG_CREATE;
 
@@ -50,7 +53,6 @@ end component;
 -------------------------------------signals-------------
 
 --signals for componet communication
-signal RST_GLOBAL: std_logic := '0';													--predefined signals from lcd controller
 signal CHAR0, CHAR1, CHAR2, CHAR3: std_logic_vector(7 downto 0);				        --char in ascii from clockmachine
 signal CHAR4, CHAR5, CHAR6, CHAR7: std_logic_vector(7 downto 0);
 signal SEK, MIN, HOUR: std_logic_vector(5 downto 0);
@@ -84,10 +86,10 @@ begin
 	INST_CLOCK_MACHINE: CLOCK_MACHINE
 		port map(
 				CLK => SYS_CLK,
-				RST_GLOBAL => RST_GLOBAL,
-				SET_SEK => '0',
-				SET_MIN => '0',
-				SET_HOUR => '0',
+				RST_GLOBAL => RESET,
+				SET_SEK => SET_SEK,
+				SET_MIN => SET_MIN,
+				SET_HOUR => SET_HOUR,
 				TICK_SEK => TICK_SEK,
 				SEK => SEK,
 				MIN => MIN,
@@ -288,8 +290,6 @@ begin
                         CURR_STATE <=Lesen;
                         
             end case;
-                
-            
        end if; 
     end process;
 end BEHAV;

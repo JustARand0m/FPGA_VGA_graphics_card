@@ -8,7 +8,8 @@ entity TOP is
 	port(
 		CLK_IN: in std_logic;
 	    PMOD_R, PMOD_G, PMOD_B: out std_logic_vector(3 downto 0);
-	    PMOD_HS, PMOD_VS: out std_logic
+	    PMOD_HS, PMOD_VS: out std_logic;
+	    BTN0, BTN1, BTN2, BTN3: in std_logic
 	);
 end TOP;
 
@@ -53,7 +54,10 @@ architecture BEHAV of TOP is
             W_ADDR: out std_logic_vector(18 downto 0);
             W_CLK: in std_logic;
             SYS_CLK: in std_logic;
-            RESET: in std_logic
+            RESET: in std_logic;
+            SET_SEK: in std_logic;
+            SET_MIN: in std_logic;
+            SET_HOUR: in std_logic
 		);
 	end component;
 	
@@ -131,7 +135,10 @@ begin
 		W_ADDR => W_ADDR,
 		W_CLK  => WRITE_CLK,
         SYS_CLK => SYS_CLK,
-        RESET   => '0'
+        RESET   => BTN3,
+        SET_SEK => BTN0,
+        SET_MIN => BTN1,
+        SET_HOUR => BTN2
     );
 
 	INST_CLKWIZ: clk_wiz_0 port map(
