@@ -129,7 +129,7 @@ begin
   CHAR6 <= x"3" & SEK_1;
   CHAR7 <= x"3" & SEK_0;
 
-    main: process (W_CLK)
+    State_Machine: process (W_CLK)
     begin
         if rising_edge (W_CLK) then
         
