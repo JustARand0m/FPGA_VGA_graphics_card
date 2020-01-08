@@ -85,7 +85,7 @@ begin
     begin
         if(PIXEL_CLK = '1' and PIXEL_CLK'event) then
             RESET_TIMER_V <= '0';
-            if((CURR_TIME_V >= convertTime(WAIT_V_DISPL + WAIT_V_FPORCH)) and (CURR_TIME_V < convertTime(WAIT_V_DISPL + WAIT_V_FPORCH + WAIT_V_BPORCH))) then
+            if((CURR_TIME_V < convertTime(WAIT_V_DISPL + WAIT_V_FPORCH + WAIT_V_BPORCH)) and (CURR_TIME_V >= convertTime(WAIT_V_DISPL + WAIT_V_FPORCH))) then
                 VS <= '0';
             else
                 VS <= '1';
@@ -100,7 +100,7 @@ begin
     begin
         if(PIXEL_CLK = '1' and PIXEL_CLK'event) then
             RESET_TIMER_H <= '0';
-            if((CURR_TIME_H >= convertTime(WAIT_H_DISPL + WAIT_H_FPORCH)) and (CURR_TIME_H < convertTime(WAIT_H_DISPL + WAIT_H_FPORCH + WAIT_H_BPORCH))) then
+            if((CURR_TIME_H < convertTime(WAIT_H_DISPL + WAIT_H_FPORCH + WAIT_H_BPORCH)) and (CURR_TIME_H >= convertTime(WAIT_H_DISPL + WAIT_H_FPORCH))) then
                 HS <= '0';
             else
                 HS <= '1';
