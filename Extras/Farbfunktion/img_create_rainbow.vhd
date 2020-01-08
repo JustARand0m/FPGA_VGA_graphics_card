@@ -77,6 +77,12 @@ constant vOFFSET: std_logic_vector (6 downto 0) := "0111111";		--64
 constant hOFFSET: std_logic_vector (8 downto 0) := "100100000";		--288
 constant h_max: std_logic_vector (9 downto 0):= "1010000000";		--640
 
+--signals for Rainbow colour
+signal W_R_Colour: std_logic_vector (3 downto 0) := "0100";			-- Signal for colour changing
+signal W_G_Colour: std_logic_vector (3 downto 0) := "0100";
+signal W_B_Colour: std_logic_vector (3 downto 0) := "0100";
+
+
 type Process_STATE is (Schreiben, Lesen);
 
 signal CURR_STATE: Process_STATE := Lesen;
@@ -141,9 +147,54 @@ begin
                     
                         if Data_Input(Count_Convert-1) =  '1' then
                             W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");
-                            W_R <= "1111";
-                            W_G <= "0000";
-                            W_B <= "0000";
+							case Count_Convert is
+								when 0 =>						--violett		--last Char
+									W_R_Colour <= "1111";		--168
+									W_G_Colour <= "0000";		--0
+									W_B_Colour <= "0000";		--185
+								
+								when 1 =>						--indigo
+									W_R_Colour <= "1000";		--128
+									W_G_Colour <= "0000";		--0
+									W_B_Colour <= "1000";		--128
+								
+								when 2 =>						--blau
+									W_R_Colour <= "0000";		--0
+									W_G_Colour <= "0100";		--68
+									W_B_Colour <= "1101";		--220
+								
+								when 3 =>						--hellblau
+									W_R_Colour <= "0000";		--0
+									W_G_Colour <= "1010";		--160
+									W_B_Colour <= "1101";		--232
+								
+								when 4 =>						--grün
+									W_R_Colour <= "0000";		--0
+									W_G_Colour <= "1111";		--255
+									W_B_Colour <= "0000";		--0
+								
+								when 5 =>						--gelb
+									W_R_Colour <= "1111";		--255
+									W_G_Colour <= "1111";		--255
+									W_B_Colour <= "0000";		--0
+								
+								when 6 =>						--orange
+									W_R_Colour <= "1111";		--255
+									W_G_Colour <= "1001";		--146
+									W_B_Colour <= "0000";		--0
+								
+								when 7 =>						--rot			--first Char
+									W_R_Colour <= "1111";		--255
+									W_G_Colour <= "0000";		--0
+									W_B_Colour <= "0000";		--0
+									
+								when others => W_R_Colour <= "1111";
+							end case;
+							
+							W_R <= W_R_Colour;
+							W_G <= W_G_Colour;
+							W_B <= W_B_Colour;
+
                         elsif Data_Input(Count_Convert-1) =  '0' then
                             W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");
                             W_R <= "0000";

@@ -60,7 +60,7 @@ signal MIN_1, MIN_0, SEK_1, SEK_0, HOUR_1, HOUR_0: std_logic_vector(3 downto 0);
 signal TICK_SEK: std_logic;
 
 
----Signals for State Lesen
+---Signals for  State Lesen
 signal Count_Char: std_logic_vector (2 downto 0) := "000";			-- 8 signs in a row
 signal Count_Zeile : std_logic_vector (4 downto 0) := "00000"; 		-- 16 rows
 
@@ -71,6 +71,12 @@ signal DATA_Input: std_logic_vector(7 downto 0);					-- 8-bit Data Input from ch
 signal ADDR: std_logic_vector (10 downto 0);  						-- 11-bit Address Output to charmaps
 signal Count_Zeile_write: std_logic_vector (4 downto 0):= "00000";	-- 16 row counter for writing to memory
 signal Count_Char_write: std_logic_vector(3 downto 0) := "0000";		-- char counter for writing to memory
+
+--Signals for random colour
+signal Count_colour: std_logic_vector (1 downto 0) := "00";			-- Counter for different colours
+signal W_R_Colour: std_logic_vector (3 downto 0) := "0100";			-- Signal for colour changing
+signal W_G_Colour: std_logic_vector (3 downto 0) := "0100";
+signal W_B_Colour: std_logic_vector (3 downto 0) := "0100";
 
 -- constant for State Schreiben
 constant vOFFSET: std_logic_vector (6 downto 0) := "0111111";		--64
@@ -141,9 +147,44 @@ begin
                     
                         if Data_Input(Count_Convert-1) =  '1' then
                             W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");
-                            W_R <= "1111";
-                            W_G <= "0000";
-                            W_B <= "0000";
+								case Count_colour is
+								when "00" => 
+									W_B_Colour <= "0010";
+									W_G_Colour <= "0010";
+									W_R_Colour <= W_R_Colour + "0001";
+									if W_R_Colour = "1111" then
+										W_R_Colour <=  "0010";
+										Count_colour <= Count_colour + "01";
+									end if;
+								when "01" =>
+									W_B_Colour <= "0010";
+									W_R_Colour <= "0010";
+									W_G_Colour <= W_G_Colour + "0001";
+									if W_G_Colour = "1111" then
+										W_G_Colour <=  "0010";
+										Count_colour <= Count_colour + "01";
+									end if;
+								when "10" =>
+									W_R_Colour <= "0010";
+									W_G_Colour <= "0010";
+									W_B_Colour <= W_B_Colour + "0001";
+									if W_B_Colour = "1111" then
+										W_B_Colour <=  "0010";
+										Count_colour <= Count_colour + "01";
+									end if;
+									if Count_colour = "10" then 
+										Count_colour <= "00";
+									end if;
+								when others => 
+									W_R_Colour <= "1111";
+									if Count_colour = "11" then 
+										Count_colour <= "00";
+									end if;
+								end case;
+							W_R <= W_R_Colour;
+							W_G <= W_G_Colour;
+							W_B <= W_B_Colour;
+
                         elsif Data_Input(Count_Convert-1) =  '0' then
                             W_ADDR <= (vOFFSET * h_max + (("0000" & Count_Zeile_write) * h_max))+ hOFFSET + Count_Convert2 + (Count_Char_write * "1000");
                             W_R <= "0000";
